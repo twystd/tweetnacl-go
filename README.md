@@ -49,7 +49,7 @@ References
 9.  [Zeroing buffers is insufficient][daemonology2]
 10. [How to zero a buffer: Erratum][daemonology3]
 11. [go-tweetnacl][go-tweetnacl]
-12. [On the Impending Crypto Monoculture][http://www.metzdowd.com/pipermail/cryptography/2016-March/028824.html]
+12. [On the Impending Crypto Monoculture][gutmann]
 
 [tweetnacl]:     http://tweetnacl.cr.yp.to
 [tweetnacl-pdf]: http://tweetnacl.cr.yp.to/tweetnacl-20131229.pdf
@@ -62,3 +62,4 @@ References
 [daemonology2]:  http://www.daemonology.net/blog/2014-09-06-zeroing-buffers-is-insufficient.html
 [daemonology3]:  http://www.daemonology.net/blog/2014-09-05-erratum.html
 [go-tweetnacl]:  https://github.com/keybase/go-tweetnacl
+[gutmann]:       http://www.metzdowd.com/pipermail/cryptography/2016-March/028824.html
