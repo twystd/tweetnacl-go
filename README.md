@@ -28,7 +28,7 @@ instance [How to zero a buffer][daemonology]). So ....
 
 Notes
 -----
-1. There is an existing port of TweetNaCl to Go [go-tweetnacl][go-tweetnacl]) but it appears to have
+1. There is an existing port of TweetNaCl to Go ([go-tweetnacl][go-tweetnacl]) but it appears to have
    been abandoned with minimal functionality.
 
 TODO
