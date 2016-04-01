@@ -1,6 +1,7 @@
 package tweetnacl
 
 import (
+	"bytes"
 	"testing"
 )
 
@@ -101,6 +102,12 @@ var BOBPK = []byte{0xde, 0x9e, 0xdb, 0x7d,
 	0xad, 0xfc, 0x7e, 0x14,
 	0x6f, 0x88, 0x2b, 0x4f}
 
+var PADDING = []byte{0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00}
+
+// Adapted from tests/box.c
 func TestCryptoBox(t *testing.T) {
 	ciphertext, err := CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
 
@@ -114,19 +121,19 @@ func TestCryptoBox(t *testing.T) {
 		return
 	}
 
-	if len(ciphertext) != (len(CIPHERTEXT) + 32) {
-		t.Errorf("cryptobox: invalid ciphertext length (%v)(%v)", len(ciphertext), len(CIPHERTEXT))
+	if !bytes.Equal(ciphertext, CIPHERTEXT) {
+		t.Errorf("cryptobox: invalid ciphertext (%v)", ciphertext[16:])
 		return
+	}
+
+}
+
+func BenchmarkCryptoBox(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
 	}
 }
 
-//func BenchmarkCryptoBox(b *testing.B) {
-//	for i := 0; i < b.N; i++ {
-//		CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
-//	}
-//}
-
-//func ExampleCryptoBox() {
-//	CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
-//	//Output: hello
-//}
+func ExampleCryptoBox() {
+	CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
+}

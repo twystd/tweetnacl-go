@@ -1,6 +1,7 @@
 package tweetnacl
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -31,5 +32,14 @@ func TestCryptoBoxKeyPair(t *testing.T) {
 func BenchmarkCryptoBoxKeyPair(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		CryptoBoxKeyPair()
+	}
+}
+
+func ExampleCryptoBoxKeyPair() {
+	keypair, err := CryptoBoxKeyPair()
+
+	if err == nil {
+		fmt.Printf("Public Key: %v", keypair.PublicKey)
+		fmt.Printf("Secret Key: %v", keypair.SecretKey)
 	}
 }
