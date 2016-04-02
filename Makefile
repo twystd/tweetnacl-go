@@ -4,18 +4,14 @@ all: format \
 	 benchmark
 
 format: 
-	GOPATH=$(shell pwd) gofmt -w=true src/*
+	gofmt -w=true *.go
 
 build: 
-	GOPATH=$(shell pwd) go build github.com/twystd/tweetnacl
+	go build 
 
 test:
-	GOPATH=$(shell pwd) go test github.com/twystd/tweetnacl 
+	go test
 
 benchmark:
-	GOPATH=$(shell pwd) go test -bench . github.com/twystd/tweetnacl 
-
-clean:
-	rm -rf pkg
-	rm -rf bin
+	go test -bench .
 
