@@ -22,6 +22,9 @@ const crypto_box_ZEROBYTES int = 32
 // The number of zero padding bytes for a crypto_box ciphertext
 const crypto_box_BOXZEROBYTES int = 16
 
+// The number of bytes in an initialised crypto_box_beforenm key buffer.
+const crypto_box_BOX_BEFORENMBYTES int = 32
+
 // Constant zero-filled byte array used for padding messages
 var crypto_box_PADDING = []byte{0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
@@ -110,4 +113,28 @@ func CryptoBoxOpen(ciphertext, nonce, publicKey, secretKey []byte) ([]byte, erro
 	}
 
 	return nil, fmt.Errorf("Error decrypting message (error code %v)", rc)
+}
+
+// Wrapper function for crypto_box_beforenm.
+//
+// Calculates a 32 byte shared key for the  hashed key-exchange described for curve 25519.
+//
+// Applications that send several messages to the same receiver can gain speed by splitting
+// CryptoBox into two steps, CryptoBoxBeforeNM and CryptoBoxAfterNM. Similarly, applications
+// that receive several messages from the same sender can gain speed by splitting CryptoBoxOpen
+// into two steps, CryptoBoxBeforeNM and CryptoBoxAfterNMOpen.
+//
+// Ref. http://nacl.cr.yp.to/box.html
+func CryptoBoxBeforeNM(publicKey, secretKey []byte) ([]byte, error) {
+	key := make([]byte, crypto_box_BOX_BEFORENMBYTES)
+
+	rc := C.crypto_box_beforenm((*C.uchar)(unsafe.Pointer(&key[0])),
+		(*C.uchar)(unsafe.Pointer(&publicKey[0])),
+		(*C.uchar)(unsafe.Pointer(&secretKey[0])))
+
+	if rc == 0 {
+		return key, nil
+	}
+
+	return nil, fmt.Errorf("Error generating shared key (error code %v)", rc)
 }

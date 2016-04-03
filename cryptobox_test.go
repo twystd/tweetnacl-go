@@ -129,6 +129,16 @@ var BOBSK = []byte{
 	0x1c, 0x2f, 0x8b, 0x27,
 	0xff, 0x88, 0xe0, 0xeb}
 
+var KEY = []byte{
+	0x1b, 0x27, 0x55, 0x64,
+	0x73, 0xe9, 0x85, 0xd4,
+	0x62, 0xcd, 0x51, 0x19,
+	0x7a, 0x9a, 0x46, 0xc7,
+	0x60, 0x09, 0x54, 0x9e,
+	0xac, 0x64, 0x74, 0xf2,
+	0x06, 0xc4, 0xee, 0x08,
+	0x44, 0xf6, 0x83, 0x89}
+
 // --- CryptoBoxKeyPair ---
 
 func TestCryptoBoxKeyPair(t *testing.T) {
@@ -214,6 +224,33 @@ func TestCryptoBoxOpen(t *testing.T) {
 func BenchmarkCryptoBoxOpen(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, BOBSK)
+	}
+}
+
+// --- CryptoBoxBeforeNM ---
+
+func TestCryptoBoxBeforeNM(t *testing.T) {
+	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+
+	if err != nil {
+		t.Errorf("cryptobox_beforenm: %v", err)
+		return
+	}
+
+	if key == nil {
+		t.Errorf("cryptobox_beforenm: nil")
+		return
+	}
+
+	if !bytes.Equal(key, KEY) {
+		t.Errorf("cryptobox_beforenm: invalid shared key (%v)", key)
+		return
+	}
+}
+
+func BenchmarkCryptoBoxBeforeNM(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		CryptoBoxBeforeNM(BOBPK, ALICESK)
 	}
 }
 
