@@ -1,5 +1,3 @@
-// +build linux,cgo darwin,cgo
-
 package tweetnacl
 
 /*
