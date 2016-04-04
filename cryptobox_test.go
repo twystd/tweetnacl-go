@@ -254,6 +254,35 @@ func BenchmarkCryptoBoxBeforeNM(b *testing.B) {
 	}
 }
 
+// --- CryptoBoxAfterNM ---
+
+func TestCryptoBoxAfteNM(t *testing.T) {
+	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	ciphertext, err := CryptoBoxAfterNM(MESSAGE, NONCE, key)
+
+	if err != nil {
+		t.Errorf("cryptobox_afternm: %v", err)
+		return
+	}
+
+	if ciphertext == nil {
+		t.Errorf("cryptobox_afternm: nil")
+		return
+	}
+
+	if !bytes.Equal(ciphertext, CIPHERTEXT) {
+		t.Errorf("cryptobox_afternm: invalid ciphertext (%v)", ciphertext)
+		return
+	}
+}
+
+func BenchmarkCryptoBoxAfterNM(b *testing.B) {
+	key, _ := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	for i := 0; i < b.N; i++ {
+		CryptoBoxAfterNM(MESSAGE, NONCE, key)
+	}
+}
+
 // --- EXAMPLES ---
 
 func ExampleCryptoBox() {
