@@ -2,8 +2,8 @@ package tweetnacl
 
 import (
 	"bytes"
-	"crypto/rand"
 	"fmt"
+	"math/rand"
 	"testing"
 )
 
@@ -138,6 +138,8 @@ var KEY = []byte{
 	0xac, 0x64, 0x74, 0xf2,
 	0x06, 0xc4, 0xee, 0x08,
 	0x44, 0xf6, 0x83, 0x89}
+
+const ROUNDS int = 100 // TODO change to 10000 when done
 
 // --- CryptoBoxKeyPair ---
 
@@ -283,10 +285,84 @@ func BenchmarkCryptoBoxAfterNM(b *testing.B) {
 	}
 }
 
+// --- LOOP TESTS ---
+
+// Adapted from tests/box7.c
+func TestCryptoBoxLoop(t *testing.T) {
+	for mlen := 0; mlen < ROUNDS; mlen++ {
+		alice, _ := CryptoBoxKeyPair()
+		bob, _ := CryptoBoxKeyPair()
+		message := make([]byte, mlen)
+		nonce := make([]byte, 24)
+
+		rand.Read(nonce)
+		rand.Read(message)
+
+		ciphertext, err := CryptoBox(message, nonce, bob.PublicKey, alice.SecretKey)
+
+		if err != nil {
+			t.Errorf("LOOP TEST: encryption error (%v)", err)
+			return
+		}
+
+		plaintext, err := CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
+
+		if err != nil {
+			t.Errorf("LOOP TEST: decryption error (%v)", err)
+			return
+		}
+
+		if !bytes.Equal(message, plaintext) {
+			t.Errorf("LOOP TEST: bad decryption (original :%v)", message)
+			t.Errorf("LOOP TEST: bad decryption (decrypted:%v)", plaintext)
+			return
+		}
+	}
+}
+
+// Adapted from tests/box8.c
+func TestCryptoBoxCorruptedCiphertext(t *testing.T) {
+	for mlen := 0; mlen < ROUNDS; mlen++ {
+		alice, _ := CryptoBoxKeyPair()
+		bob, _ := CryptoBoxKeyPair()
+		message := make([]byte, mlen)
+		nonce := make([]byte, 24)
+		caught := 0
+
+		rand.Read(nonce)
+		rand.Read(message)
+
+		ciphertext, err := CryptoBox(message, nonce, bob.PublicKey, alice.SecretKey)
+
+		if err != nil {
+			t.Errorf("CORRUPTED CIPHERTEXT: encryption error (%v)", err)
+			return
+		}
+
+		for caught < 10 {
+			ix := rand.Intn(len(ciphertext))
+			b := byte(rand.Intn(256))
+
+			ciphertext[ix] = b
+			plaintext, err := CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
+
+			if err == nil {
+				if !bytes.Equal(message, plaintext) {
+					t.Errorf("Forgery!!!")
+					return
+				}
+			}
+
+			caught++
+		}
+	}
+
+}
+
 // --- EXAMPLES ---
 
 func ExampleCryptoBox() {
-	message := []byte("Once Were Warriors")
+	message := []byte("Neque porro quisquam est qui dolorem ipsum quia dolor sit amet")
 	nonce := make([]byte, 24)
 	alice, _ := CryptoBoxKeyPair()
 	bob, _ := CryptoBoxKeyPair()
@@ -309,5 +385,33 @@ func ExampleCryptoBox() {
 
 	fmt.Printf("[%s]", string(plaintext))
 
-	// Output: [Once Were Warriors]
+	// Output: [Neque porro quisquam est qui dolorem ipsum quia dolor sit amet]
+}
+
+func ExampleCryptoBoxNM() {
+	message := []byte("Neque porro quisquam est qui dolorem ipsum quia dolor sit amet")
+	nonce := make([]byte, 24)
+	alice, _ := CryptoBoxKeyPair()
+	bob, _ := CryptoBoxKeyPair()
+
+	rand.Read(nonce)
+
+	key, err := CryptoBoxBeforeNM(bob.PublicKey, alice.SecretKey)
+	ciphertext, err := CryptoBoxAfterNM(message, nonce, key)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+
+	plaintext, err := CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+
+	fmt.Printf("[%s]", string(plaintext))
+
+	// Output: [Neque porro quisquam est qui dolorem ipsum quia dolor sit amet]
 }
