@@ -285,6 +285,35 @@ func BenchmarkCryptoBoxAfterNM(b *testing.B) {
 	}
 }
 
+// --- CryptoBoxOpenAfterNM ---
+
+func TestCryptoBoxOpenAfteNM(t *testing.T) {
+	key, err := CryptoBoxBeforeNM(ALICEPK, BOBSK)
+	plaintext, err := CryptoBoxOpenAfterNM(CIPHERTEXT, NONCE, key)
+
+	if err != nil {
+		t.Errorf("cryptobox_open_afternm: %v", err)
+		return
+	}
+
+	if plaintext == nil {
+		t.Errorf("cryptobox_open_afternm: nil")
+		return
+	}
+
+	if !bytes.Equal(plaintext, MESSAGE) {
+		t.Errorf("cryptobox_open_afternm: invalid plaintext (%v)", plaintext)
+		return
+	}
+}
+
+func BenchmarkCryptoBoxOpenAfterNM(b *testing.B) {
+	key, _ := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	for i := 0; i < b.N; i++ {
+		CryptoBoxAfterNM(MESSAGE, NONCE, key)
+	}
+}
+
 // --- LOOP TESTS ---
 
 // Adapted from tests/box7.c
@@ -389,29 +418,38 @@ func ExampleCryptoBox() {
 }
 
 func ExampleCryptoBoxNM() {
-	message := []byte("Neque porro quisquam est qui dolorem ipsum quia dolor sit amet")
+	message := make([]byte, 1024)
 	nonce := make([]byte, 24)
 	alice, _ := CryptoBoxKeyPair()
 	bob, _ := CryptoBoxKeyPair()
 
-	rand.Read(nonce)
+	encryptKey, _ := CryptoBoxBeforeNM(bob.PublicKey, alice.SecretKey)
+	decryptKey, _ := CryptoBoxBeforeNM(alice.PublicKey, bob.SecretKey)
 
-	key, err := CryptoBoxBeforeNM(bob.PublicKey, alice.SecretKey)
-	ciphertext, err := CryptoBoxAfterNM(message, nonce, key)
+	for i := 0; i < 1000; i++ {
+		rand.Read(nonce)
+		rand.Read(message)
 
-	if err != nil {
-		fmt.Printf("%v", err)
-		return
+		ciphertext, err := CryptoBoxAfterNM(message, nonce, encryptKey)
+
+		if err != nil {
+			fmt.Printf("%v", err)
+			return
+		}
+
+		plaintext, err := CryptoBoxOpenAfterNM(ciphertext, nonce, decryptKey)
+
+		if err != nil {
+			fmt.Printf("%v", err)
+			return
+		}
+
+		if !bytes.Equal(plaintext, message) {
+			fmt.Printf("Decrypted plaintext does not match message")
+			return
+		}
 	}
+	fmt.Printf("OK")
 
-	plaintext, err := CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
-
-	if err != nil {
-		fmt.Printf("%v", err)
-		return
-	}
-
-	fmt.Printf("[%s]", string(plaintext))
-
-	// Output: [Neque porro quisquam est qui dolorem ipsum quia dolor sit amet]
+	// Output: OK
 }
