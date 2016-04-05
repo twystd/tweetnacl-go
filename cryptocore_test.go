@@ -7,14 +7,16 @@ import (
 
 // --- CryptoCoreHSalsa20 ---
 
+// Adapted from tests/core1.c)
 func TestCryptoCoreHSalsa20(t *testing.T) {
-
-	in := []byte{0x00, 0x00, 0x00, 0x00,
+	in := []byte{
+		0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00}
 
-	key := []byte{0x4a, 0x5d, 0x9d, 0x5b,
+	key := []byte{
+		0x4a, 0x5d, 0x9d, 0x5b,
 		0xa4, 0xce, 0x2d, 0xe1,
 		0x72, 0x8e, 0x3b, 0xf4,
 		0x80, 0x35, 0x0f, 0x25,
@@ -23,12 +25,14 @@ func TestCryptoCoreHSalsa20(t *testing.T) {
 		0x76, 0xf0, 0x9b, 0x3c,
 		0x1e, 0x16, 0x17, 0x42}
 
-	constant := []byte{0x65, 0x78, 0x70, 0x61,
+	constant := []byte{
+		0x65, 0x78, 0x70, 0x61,
 		0x6e, 0x64, 0x20, 0x33,
 		0x32, 0x2d, 0x62, 0x79,
 		0x74, 0x65, 0x20, 0x6b}
 
-	expected := []byte{0x1b, 0x27, 0x55, 0x64,
+	expected := []byte{
+		0x1b, 0x27, 0x55, 0x64,
 		0x73, 0xe9, 0x85, 0xd4,
 		0x62, 0xcd, 0x51, 0x19,
 		0x7a, 0x9a, 0x46, 0xc7,
@@ -36,6 +40,59 @@ func TestCryptoCoreHSalsa20(t *testing.T) {
 		0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08,
 		0x44, 0xf6, 0x83, 0x89}
+
+	out, err := CryptoCoreHSalsa20(in, key, constant)
+
+	if err != nil {
+		t.Errorf("cryptocore_hsalsa20: %v", err)
+		return
+	}
+
+	if out == nil {
+		t.Errorf("cryptocore_hsalsa20: nil")
+		return
+	}
+
+	if !bytes.Equal(out, expected) {
+		t.Errorf("cryptocore_hsalsa20: invalid intermediate key (%v)", out)
+		return
+	}
+}
+
+// Adapted from tests/core2.c)
+func TestCryptoCoreHSalsa20X(t *testing.T) {
+
+	in := []byte{
+		0x69, 0x69, 0x6e, 0xe9,
+		0x55, 0xb6, 0x2b, 0x73,
+		0xcd, 0x62, 0xbd, 0xa8,
+		0x75, 0xfc, 0x73, 0xd6}
+
+	key := []byte{
+		0x1b, 0x27, 0x55, 0x64,
+		0x73, 0xe9, 0x85, 0xd4,
+		0x62, 0xcd, 0x51, 0x19,
+		0x7a, 0x9a, 0x46, 0xc7,
+		0x60, 0x09, 0x54, 0x9e,
+		0xac, 0x64, 0x74, 0xf2,
+		0x06, 0xc4, 0xee, 0x08,
+		0x44, 0xf6, 0x83, 0x89}
+
+	constant := []byte{
+		0x65, 0x78, 0x70, 0x61,
+		0x6e, 0x64, 0x20, 0x33,
+		0x32, 0x2d, 0x62, 0x79,
+		0x74, 0x65, 0x20, 0x6b}
+
+	expected := []byte{
+		0xdc, 0x90, 0x8d, 0xda,
+		0x0b, 0x93, 0x44, 0xa9,
+		0x53, 0x62, 0x9b, 0x73,
+		0x38, 0x20, 0x77, 0x88,
+		0x80, 0xf3, 0xce, 0xb4,
+		0x21, 0xbb, 0x61, 0xb9,
+		0x1c, 0xbd, 0x4c, 0x3e,
+		0x66, 0x25, 0x6c, 0xe4}
 
 	out, err := CryptoCoreHSalsa20(in, key, constant)
 
@@ -78,5 +135,97 @@ func BenchmarkCryptoHSalsa20(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		CryptoCoreHSalsa20(in, key, constant)
+	}
+}
+
+// --- CryptoCoreSalsa20 ---
+
+// Adapted from tests/core4.c
+func TestCryptoCoreSalsa20(t *testing.T) {
+
+	in := []byte{
+		101, 102, 103, 104,
+		105, 106, 107, 108,
+		109, 110, 111, 112,
+		113, 114, 115, 116}
+
+	key := []byte{
+		1, 2, 3, 4,
+		5, 6, 7, 8,
+		9, 10, 11, 12,
+		13, 14, 15, 16,
+		201, 202, 203, 204,
+		205, 206, 207, 208,
+		209, 210, 211, 212,
+		213, 214, 215, 216}
+
+	constant := []byte{
+		101, 120, 112, 97,
+		110, 100, 32, 51,
+		50, 45, 98, 121,
+		116, 101, 32, 107}
+
+	expected := []byte{
+		69, 37, 68, 39,
+		41, 15, 107, 193,
+		255, 139, 122, 6,
+		170, 233, 217, 98,
+		89, 144, 182, 106,
+		21, 51, 200, 65,
+		239, 49, 222, 34,
+		215, 114, 40, 126,
+		104, 197, 7, 225,
+		197, 153, 31, 2,
+		102, 78, 76, 176,
+		84, 245, 246, 184,
+		177, 160, 133, 130,
+		6, 72, 149, 119,
+		192, 195, 132, 236,
+		234, 103, 246, 74}
+
+	out, err := CryptoCoreSalsa20(in, key, constant)
+
+	if err != nil {
+		t.Errorf("cryptocore_salsa20: %v", err)
+		return
+	}
+
+	if out == nil {
+		t.Errorf("cryptocore_salsa20: nil")
+		return
+	}
+
+	if !bytes.Equal(out, expected) {
+		t.Errorf("cryptocore_salsa20: invalid intermediate key (%v)", out)
+		return
+	}
+}
+
+func BenchmarkCryptoSalsa20(b *testing.B) {
+
+	in := []byte{
+		101, 102, 103, 104,
+		105, 106, 107, 108,
+		109, 110, 111, 112,
+		113, 114, 115, 116}
+
+	key := []byte{
+		1, 2, 3, 4,
+		5, 6, 7, 8,
+		9, 10, 11, 12,
+		13, 14, 15, 16,
+		201, 202, 203, 204,
+		205, 206, 207, 208,
+		209, 210, 211, 212,
+		213, 214, 215, 216}
+
+	constant := []byte{
+		101, 120, 112, 97,
+		110, 100, 32, 51,
+		50, 45, 98, 121,
+		116, 101, 32, 107}
+
+	for i := 0; i < b.N; i++ {
+		CryptoCoreSalsa20(in, key, constant)
 	}
 }
