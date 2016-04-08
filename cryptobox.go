@@ -11,22 +11,22 @@ import (
 )
 
 // The number of bytes in a crypto_box public key
-const crypto_box_PUBLICKEYBYTES int = 32
+const BOX_PUBLICKEYBYTES int = 32
 
 // The number of bytes in a crypto_box secret key
-const crypto_box_SECRETKEYBYTES int = 32
+const BOX_SECRETKEYBYTES int = 32
 
 // The number of zero padding bytes for a crypto_box message
-const crypto_box_ZEROBYTES int = 32
+const BOX_ZEROBYTES int = 32
 
 // The number of zero padding bytes for a crypto_box ciphertext
-const crypto_box_BOXZEROBYTES int = 16
+const BOX_BOXZEROBYTES int = 16
 
 // The number of bytes in an initialised crypto_box_beforenm key buffer.
-const crypto_box_BOX_BEFORENMBYTES int = 32
+const BOX_BEFORENMBYTES int = 32
 
 // Constant zero-filled byte array used for padding messages
-var crypto_box_PADDING = []byte{0x00, 0x00, 0x00, 0x00,
+var BOX_PADDING = []byte{0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
@@ -43,13 +43,13 @@ type KeyPair struct {
 // Wrapper function for crypto_box_keypair.
 //
 // Randomly generates a secret key and a corresponding public key. It guarantees that the secret key
-// has crypto_box_PUBLICKEYBYTES bytes and that the public key has crypto_box_SECRETKEYBYTES bytes,
+// has BOX_PUBLICKEYBYTES bytes and that the public key has BOX_SECRETKEYBYTES bytes,
 // returns a KeyPair initialised with a crypto_box public/private key pair.
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxKeyPair() (*KeyPair, error) {
-	pk := make([]byte, crypto_box_PUBLICKEYBYTES)
-	sk := make([]byte, crypto_box_SECRETKEYBYTES)
+	pk := make([]byte, BOX_PUBLICKEYBYTES)
+	sk := make([]byte, BOX_SECRETKEYBYTES)
 	rc := C.crypto_box_keypair((*C.uchar)(unsafe.Pointer(&pk[0])), (*C.uchar)(unsafe.Pointer(&sk[0])))
 
 	if rc == 0 {
@@ -68,10 +68,10 @@ func CryptoBoxKeyPair() (*KeyPair, error) {
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBox(message, nonce, publicKey, secretKey []byte) ([]byte, error) {
-	buffer := make([]byte, len(message)+crypto_box_ZEROBYTES)
+	buffer := make([]byte, len(message)+BOX_ZEROBYTES)
 
-	copy(buffer[0:crypto_box_ZEROBYTES], crypto_box_PADDING)
-	copy(buffer[crypto_box_ZEROBYTES:], message)
+	copy(buffer[0:BOX_ZEROBYTES], BOX_PADDING)
+	copy(buffer[BOX_ZEROBYTES:], message)
 
 	rc := C.crypto_box((*C.uchar)(unsafe.Pointer(&buffer[0])),
 		(*C.uchar)(unsafe.Pointer(&buffer[0])),
@@ -81,7 +81,7 @@ func CryptoBox(message, nonce, publicKey, secretKey []byte) ([]byte, error) {
 		(*C.uchar)(unsafe.Pointer(&secretKey[0])))
 
 	if rc == 0 {
-		return buffer[crypto_box_BOXZEROBYTES:], nil
+		return buffer[BOX_BOXZEROBYTES:], nil
 	}
 
 	return nil, fmt.Errorf("Error encrypting message (error code %v)", rc)
@@ -96,10 +96,10 @@ func CryptoBox(message, nonce, publicKey, secretKey []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxOpen(ciphertext, nonce, publicKey, secretKey []byte) ([]byte, error) {
-	buffer := make([]byte, len(ciphertext)+crypto_box_BOXZEROBYTES)
+	buffer := make([]byte, len(ciphertext)+BOX_BOXZEROBYTES)
 
-	copy(buffer[0:crypto_box_BOXZEROBYTES], crypto_box_PADDING)
-	copy(buffer[crypto_box_BOXZEROBYTES:], ciphertext)
+	copy(buffer[0:BOX_BOXZEROBYTES], BOX_PADDING)
+	copy(buffer[BOX_BOXZEROBYTES:], ciphertext)
 
 	rc := C.crypto_box_open((*C.uchar)(unsafe.Pointer(&buffer[0])),
 		(*C.uchar)(unsafe.Pointer(&buffer[0])),
@@ -109,7 +109,7 @@ func CryptoBoxOpen(ciphertext, nonce, publicKey, secretKey []byte) ([]byte, erro
 		(*C.uchar)(unsafe.Pointer(&secretKey[0])))
 
 	if rc == 0 {
-		return buffer[crypto_box_ZEROBYTES:], nil
+		return buffer[BOX_ZEROBYTES:], nil
 	}
 
 	return nil, fmt.Errorf("Error decrypting message (error code %v)", rc)
@@ -126,7 +126,7 @@ func CryptoBoxOpen(ciphertext, nonce, publicKey, secretKey []byte) ([]byte, erro
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxBeforeNM(publicKey, secretKey []byte) ([]byte, error) {
-	key := make([]byte, crypto_box_BOX_BEFORENMBYTES)
+	key := make([]byte, BOX_BEFORENMBYTES)
 
 	rc := C.crypto_box_beforenm((*C.uchar)(unsafe.Pointer(&key[0])),
 		(*C.uchar)(unsafe.Pointer(&publicKey[0])),
@@ -148,10 +148,10 @@ func CryptoBoxBeforeNM(publicKey, secretKey []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxAfterNM(message, nonce, key []byte) ([]byte, error) {
-	buffer := make([]byte, len(message)+crypto_box_ZEROBYTES)
+	buffer := make([]byte, len(message)+BOX_ZEROBYTES)
 
-	copy(buffer[0:crypto_box_ZEROBYTES], crypto_box_PADDING)
-	copy(buffer[crypto_box_ZEROBYTES:], message)
+	copy(buffer[0:BOX_ZEROBYTES], BOX_PADDING)
+	copy(buffer[BOX_ZEROBYTES:], message)
 
 	rc := C.crypto_box_afternm((*C.uchar)(unsafe.Pointer(&buffer[0])),
 		(*C.uchar)(unsafe.Pointer(&buffer[0])),
@@ -160,7 +160,7 @@ func CryptoBoxAfterNM(message, nonce, key []byte) ([]byte, error) {
 		(*C.uchar)(unsafe.Pointer(&key[0])))
 
 	if rc == 0 {
-		return buffer[crypto_box_BOXZEROBYTES:], nil
+		return buffer[BOX_BOXZEROBYTES:], nil
 	}
 
 	return nil, fmt.Errorf("Error encrypting message (error code %v)", rc)
@@ -175,10 +175,10 @@ func CryptoBoxAfterNM(message, nonce, key []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxOpenAfterNM(ciphertext, nonce, key []byte) ([]byte, error) {
-	buffer := make([]byte, len(ciphertext)+crypto_box_BOXZEROBYTES)
+	buffer := make([]byte, len(ciphertext)+BOX_BOXZEROBYTES)
 
-	copy(buffer[0:crypto_box_BOXZEROBYTES], crypto_box_PADDING)
-	copy(buffer[crypto_box_BOXZEROBYTES:], ciphertext)
+	copy(buffer[0:BOX_BOXZEROBYTES], BOX_PADDING)
+	copy(buffer[BOX_BOXZEROBYTES:], ciphertext)
 
 	rc := C.crypto_box_open_afternm((*C.uchar)(unsafe.Pointer(&buffer[0])),
 		(*C.uchar)(unsafe.Pointer(&buffer[0])),
@@ -187,7 +187,7 @@ func CryptoBoxOpenAfterNM(ciphertext, nonce, key []byte) ([]byte, error) {
 		(*C.uchar)(unsafe.Pointer(&key[0])))
 
 	if rc == 0 {
-		return buffer[crypto_box_ZEROBYTES:], nil
+		return buffer[BOX_ZEROBYTES:], nil
 	}
 
 	return nil, fmt.Errorf("Error decrypting message (error code %v)", rc)
