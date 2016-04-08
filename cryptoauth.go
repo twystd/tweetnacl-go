@@ -36,3 +36,23 @@ func CryptoOneTimeAuth(message, key []byte) ([]byte, error) {
 
 	return nil, fmt.Errorf("Error calculating one time authenticator (error code %v)", rc)
 }
+
+// Wrapper function for crypto_onetimeauth_verify.
+//
+// Uses the supplied secret key to verify the authenticator for the message.
+//
+// Ref. http://nacl.cr.yp.to/onetimeauth.html
+func CryptoOneTimeAuthVerify(authenticator, message, key []byte) (bool, error) {
+	N := len(message)
+
+	rc := C.crypto_onetimeauth_verify((*C.uchar)(unsafe.Pointer(&authenticator[0])),
+		(*C.uchar)(unsafe.Pointer(&message[0])),
+		(C.ulonglong)(N),
+		(*C.uchar)(unsafe.Pointer(&key[0])))
+
+	if rc == 0 {
+		return true, nil
+	}
+
+	return false, fmt.Errorf("Error calculating one time authenticator (error code %v)", rc)
+}
