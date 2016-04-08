@@ -2,6 +2,7 @@ package tweetnacl
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 )
 
@@ -204,4 +205,60 @@ func BenchmarkCryptoHashBlocks(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		hash, _ = CryptoHashBlocks(hash, blocks)
 	}
+}
+
+// --- EXAMPLES ---
+
+func ExampleCryptoHash() {
+	message := []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor")
+
+	hash, err := CryptoHash(message)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+
+	fmt.Printf("[%x]", hash)
+
+	// Output: [5dfaeb09829a546d8adcef4437957814b7b2f44a128600ab0e4f5322c6150cf5c33957f13055b9266e370c199bb764d4f38bb277b5f345e890d2e0bb3992c4dd]
+}
+
+func ExampleCryptoHashBlocks() {
+
+	message := []string{
+		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut e",
+		"nim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in",
+		" reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, s",
+		"unt in culpa qui officia deserunt mollit anim id est laborum                                                                    "}
+
+	iv := []byte{
+		0x6a, 0x09, 0xe6, 0x67,
+		0xf3, 0xbc, 0xc9, 0x08,
+		0xbb, 0x67, 0xae, 0x85,
+		0x84, 0xca, 0xa7, 0x3b,
+		0x3c, 0x6e, 0xf3, 0x72,
+		0xfe, 0x94, 0xf8, 0x2b,
+		0xa5, 0x4f, 0xf5, 0x3a,
+		0x5f, 0x1d, 0x36, 0xf1,
+		0x51, 0x0e, 0x52, 0x7f,
+		0xad, 0xe6, 0x82, 0xd1,
+		0x9b, 0x05, 0x68, 0x8c,
+		0x2b, 0x3e, 0x6c, 0x1f,
+		0x1f, 0x83, 0xd9, 0xab,
+		0xfb, 0x41, 0xbd, 0x6b,
+		0x5b, 0xe0, 0xcd, 0x19,
+		0x13, 0x7e, 0x21, 0x79}
+
+	hash := make([]byte, 64)
+
+	copy(hash, []byte(iv))
+
+	for _, block := range message {
+		hash, _ = CryptoHashBlocks(hash, []byte(block))
+	}
+
+	fmt.Printf("[%x]", hash)
+
+	// Output: [dc80679c10b1aaf584b90239c1f40bd82bdf8184086cd9106861ca4f4b024baf6a24d8ae74ad131f3fd0e5391ecafdd62c6ce2c3c0c66314f0d4554500613747]
 }

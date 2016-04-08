@@ -33,7 +33,9 @@ Notes
 
 TODO
 ----
-
+1. Either add validation to byte array argument lengths or unit tests to check that it does fail when
+   the supplied arguments are invalid.
+2. Validate CryptoHash/CryptoHashBlocks against known SHA-512
 
 References
 ----------
