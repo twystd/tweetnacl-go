@@ -64,7 +64,23 @@ func CryptoOneTimeAuthVerify(authenticator, message, key []byte) (bool, error) {
 
 // Wrapper function for crypto_scalarmult_base.
 //
-// Computes the scalar product of a standard group element and an integer.
+// Computes the scalar product of a standard group element and an integer <code>n</code>.
+//
+// Ref. http://nacl.cr.yp.to/onetimeauth.html
+func CryptoScalarMultBase(n []byte) ([]byte, error) {
+	q := make([]byte, SCALARMULT_BYTES)
+	rc := C.crypto_scalarmult_base(makePtr(q), makePtr(n))
+
+	if rc == 0 {
+		return q, nil
+	}
+
+	return nil, fmt.Errorf("Error calculating base scalar multiplication (error code %v)", rc)
+}
+
+// Wrapper function for crypto_scalarmult.
+//
+// Computes the scalar product of a group element p and an integer n.
 //
 // Ref. http://nacl.cr.yp.to/onetimeauth.html
 func CryptoScalarMult(n, p []byte) ([]byte, error) {
