@@ -9,6 +9,7 @@ characteristics of the original implementation.
 Version Info
 ------------
 tweetnacl: 20140427
+
 tweetnacl-golang: 0.00.0
 
 Usage
@@ -33,8 +34,8 @@ Notes
 1. There is an existing port of TweetNaCl to Go ([go-tweetnacl][go-tweetnacl]) which reimplements the C code
    in Go.
 2. The cgo FFI doesn't handle zero length byte arrays particularly elegantly (see discussion at
-   [Passing zero length Go byte array to a C function][golang-nuts]) - the conversion to a (\*C.uchar) pointer
-   has been abstracted into a convenience function _makePtr_. _makePtr_ includes a commented out version
+   [Passing zero length Go byte array to a C function][golang-nuts]). The conversion to a (\*C.uchar) pointer
+   has been abstracted into a convenience function _makePtr_, which includes a commented out version
    that returns nil for a zero length array if you prefer not to use the esoteric 'unsafe' version.
 
 TODO
