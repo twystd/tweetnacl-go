@@ -9,6 +9,7 @@ characteristics of the original implementation.
 Version Info
 ------------
 tweetnacl: 20140427
+tweetnacl-golang: (in progress)
 
 Usage
 -----
@@ -31,6 +32,10 @@ Notes
 -----
 1. There is an existing port of TweetNaCl to Go ([go-tweetnacl][go-tweetnacl]) which reimplements the C code
    in Go.
+2. The cgo FFI doesn't handle zero length byte arrays particularly elegantly (see discussion at
+   [Passing zero length byte array to a C function][golang-nuts]) - the conversion to a (\*C.uchar) pointer
+   has been abstracted into a convenience function _makePtr_. _makePtr_ includes a commented out version
+   that returns nil for a zero length array if you prefer not to use the esoteric 'unsafe' version.
 
 TODO
 ----
@@ -55,6 +60,7 @@ References
 10. [How to zero a buffer: Erratum][daemonology3]
 11. [go-tweetnacl][go-tweetnacl]
 12. [On the Impending Crypto Monoculture][gutmann]
+13. [Passing zero length byte array to a C function][golang-nuts]
 
 [tweetnacl]:     http://tweetnacl.cr.yp.to
 [tweetnacl-pdf]: http://tweetnacl.cr.yp.to/tweetnacl-20131229.pdf
@@ -68,3 +74,5 @@ References
 [daemonology3]:  http://www.daemonology.net/blog/2014-09-05-erratum.html
 [go-tweetnacl]:  https://github.com/keybase/go-tweetnacl
 [gutmann]:       http://www.metzdowd.com/pipermail/cryptography/2016-March/028824.html
+[golang-nuts]:   https://groups.google.com/forum/#!topic/golang-nuts/NNBdjztWquo
+
