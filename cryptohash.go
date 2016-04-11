@@ -7,7 +7,6 @@ import "C"
 
 import (
 	"fmt"
-	"unsafe"
 )
 
 // The number of bytes returned by CryptHash.
@@ -26,11 +25,11 @@ const crypto_hash_HASHBLOCKS_BLOCKBYTES int = 128
 // Ref. http://nacl.cr.yp.to/hash.html
 func CryptoHash(message []byte) ([]byte, error) {
 	hash := make([]byte, crypto_hash_HASH_BYTES)
-	N := len(message)
+	N := (C.ulonglong)(len(message))
 
-	rc := C.crypto_hash((*C.uchar)(unsafe.Pointer(&hash[0])),
-		(*C.uchar)(unsafe.Pointer(&message[0])),
-		(C.ulonglong)(N))
+	rc := C.crypto_hash(makePtr(hash),
+		makePtr(message),
+		N)
 
 	if rc == 0 {
 		return hash, nil
@@ -48,13 +47,13 @@ func CryptoHash(message []byte) ([]byte, error) {
 // Ref. http://nacl.cr.yp.to/hash.html
 func CryptoHashBlocks(iv, blocks []byte) ([]byte, error) {
 	hash := make([]byte, crypto_hash_HASHBLOCKS_STATEBYTES)
-	N := len(blocks)
+	N := (C.ulonglong)(len(blocks))
 
 	copy(hash, iv)
 
-	rc := C.crypto_hashblocks((*C.uchar)(unsafe.Pointer(&hash[0])),
-		(*C.uchar)(unsafe.Pointer(&blocks[0])),
-		(C.ulonglong)(N))
+	rc := C.crypto_hashblocks(makePtr(hash),
+		makePtr(blocks),
+		N)
 
 	if rc == 0 {
 		return hash, nil

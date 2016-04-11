@@ -7,7 +7,6 @@ import "C"
 
 import (
 	"fmt"
-	"unsafe"
 )
 
 // The number of bytes in the authenticator.
@@ -23,12 +22,12 @@ const ONETIMEAUTH_KEYBYTES int = 32
 // Ref. http://nacl.cr.yp.to/onetimeauth.html
 func CryptoOneTimeAuth(message, key []byte) ([]byte, error) {
 	authenticator := make([]byte, ONETIMEAUTH_BYTES)
-	N := len(message)
+	N := (C.ulonglong)(len(message))
 
-	rc := C.crypto_onetimeauth((*C.uchar)(unsafe.Pointer(&authenticator[0])),
-		(*C.uchar)(unsafe.Pointer(&message[0])),
-		(C.ulonglong)(N),
-		(*C.uchar)(unsafe.Pointer(&key[0])))
+	rc := C.crypto_onetimeauth(makePtr(authenticator),
+		makePtr(message),
+		N,
+		makePtr(key))
 
 	if rc == 0 {
 		return authenticator, nil
@@ -43,12 +42,12 @@ func CryptoOneTimeAuth(message, key []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/onetimeauth.html
 func CryptoOneTimeAuthVerify(authenticator, message, key []byte) (bool, error) {
-	N := len(message)
+	N := (C.ulonglong)(len(message))
 
-	rc := C.crypto_onetimeauth_verify((*C.uchar)(unsafe.Pointer(&authenticator[0])),
-		(*C.uchar)(unsafe.Pointer(&message[0])),
-		(C.ulonglong)(N),
-		(*C.uchar)(unsafe.Pointer(&key[0])))
+	rc := C.crypto_onetimeauth_verify(makePtr(authenticator),
+		makePtr(message),
+		N,
+		makePtr(key))
 
 	if rc == 0 {
 		return true, nil

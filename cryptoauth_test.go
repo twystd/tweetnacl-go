@@ -201,7 +201,7 @@ func TestCryptoOneTimeAuthVerify(t *testing.T) {
 
 // Adapted from tests/onetimeauth7.c
 func TestCryptoOneTimeAuthVerifyWithMutations(t *testing.T) {
-	for clen := 1; clen < ROUNDS; clen++ {
+	for clen := 0; clen < ROUNDS; clen++ {
 		key := make([]byte, ONETIMEAUTH_KEYBYTES)
 		message := make([]byte, clen)
 

@@ -7,7 +7,6 @@ import "C"
 
 import (
 	"fmt"
-	"unsafe"
 )
 
 // The number of bytes in a crypto_box public key
@@ -50,7 +49,7 @@ type KeyPair struct {
 func CryptoBoxKeyPair() (*KeyPair, error) {
 	pk := make([]byte, BOX_PUBLICKEYBYTES)
 	sk := make([]byte, BOX_SECRETKEYBYTES)
-	rc := C.crypto_box_keypair((*C.uchar)(unsafe.Pointer(&pk[0])), (*C.uchar)(unsafe.Pointer(&sk[0])))
+	rc := C.crypto_box_keypair(makePtr(pk), makePtr(sk))
 
 	if rc == 0 {
 		return &KeyPair{PublicKey: pk, SecretKey: sk}, nil
@@ -69,16 +68,17 @@ func CryptoBoxKeyPair() (*KeyPair, error) {
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBox(message, nonce, publicKey, secretKey []byte) ([]byte, error) {
 	buffer := make([]byte, len(message)+BOX_ZEROBYTES)
+	N := (C.ulonglong)(len(buffer))
 
 	copy(buffer[0:BOX_ZEROBYTES], BOX_PADDING)
 	copy(buffer[BOX_ZEROBYTES:], message)
 
-	rc := C.crypto_box((*C.uchar)(unsafe.Pointer(&buffer[0])),
-		(*C.uchar)(unsafe.Pointer(&buffer[0])),
-		(C.ulonglong)(len(buffer)),
-		(*C.uchar)(unsafe.Pointer(&nonce[0])),
-		(*C.uchar)(unsafe.Pointer(&publicKey[0])),
-		(*C.uchar)(unsafe.Pointer(&secretKey[0])))
+	rc := C.crypto_box(makePtr(buffer),
+		makePtr(buffer),
+		N,
+		makePtr(nonce),
+		makePtr(publicKey),
+		makePtr(secretKey))
 
 	if rc == 0 {
 		return buffer[BOX_BOXZEROBYTES:], nil
@@ -97,16 +97,17 @@ func CryptoBox(message, nonce, publicKey, secretKey []byte) ([]byte, error) {
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxOpen(ciphertext, nonce, publicKey, secretKey []byte) ([]byte, error) {
 	buffer := make([]byte, len(ciphertext)+BOX_BOXZEROBYTES)
+	N := (C.ulonglong)(len(buffer))
 
 	copy(buffer[0:BOX_BOXZEROBYTES], BOX_PADDING)
 	copy(buffer[BOX_BOXZEROBYTES:], ciphertext)
 
-	rc := C.crypto_box_open((*C.uchar)(unsafe.Pointer(&buffer[0])),
-		(*C.uchar)(unsafe.Pointer(&buffer[0])),
-		(C.ulonglong)(len(buffer)),
-		(*C.uchar)(unsafe.Pointer(&nonce[0])),
-		(*C.uchar)(unsafe.Pointer(&publicKey[0])),
-		(*C.uchar)(unsafe.Pointer(&secretKey[0])))
+	rc := C.crypto_box_open(makePtr(buffer),
+		makePtr(buffer),
+		N,
+		makePtr(nonce),
+		makePtr(publicKey),
+		makePtr(secretKey))
 
 	if rc == 0 {
 		return buffer[BOX_ZEROBYTES:], nil
@@ -128,9 +129,9 @@ func CryptoBoxOpen(ciphertext, nonce, publicKey, secretKey []byte) ([]byte, erro
 func CryptoBoxBeforeNM(publicKey, secretKey []byte) ([]byte, error) {
 	key := make([]byte, BOX_BEFORENMBYTES)
 
-	rc := C.crypto_box_beforenm((*C.uchar)(unsafe.Pointer(&key[0])),
-		(*C.uchar)(unsafe.Pointer(&publicKey[0])),
-		(*C.uchar)(unsafe.Pointer(&secretKey[0])))
+	rc := C.crypto_box_beforenm(makePtr(key),
+		makePtr(publicKey),
+		makePtr(secretKey))
 
 	if rc == 0 {
 		return key, nil
@@ -149,15 +150,16 @@ func CryptoBoxBeforeNM(publicKey, secretKey []byte) ([]byte, error) {
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxAfterNM(message, nonce, key []byte) ([]byte, error) {
 	buffer := make([]byte, len(message)+BOX_ZEROBYTES)
+	N := (C.ulonglong)(len(buffer))
 
 	copy(buffer[0:BOX_ZEROBYTES], BOX_PADDING)
 	copy(buffer[BOX_ZEROBYTES:], message)
 
-	rc := C.crypto_box_afternm((*C.uchar)(unsafe.Pointer(&buffer[0])),
-		(*C.uchar)(unsafe.Pointer(&buffer[0])),
-		(C.ulonglong)(len(buffer)),
-		(*C.uchar)(unsafe.Pointer(&nonce[0])),
-		(*C.uchar)(unsafe.Pointer(&key[0])))
+	rc := C.crypto_box_afternm(makePtr(buffer),
+		makePtr(buffer),
+		N,
+		makePtr(nonce),
+		makePtr(key))
 
 	if rc == 0 {
 		return buffer[BOX_BOXZEROBYTES:], nil
@@ -176,15 +178,16 @@ func CryptoBoxAfterNM(message, nonce, key []byte) ([]byte, error) {
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxOpenAfterNM(ciphertext, nonce, key []byte) ([]byte, error) {
 	buffer := make([]byte, len(ciphertext)+BOX_BOXZEROBYTES)
+	N := (C.ulonglong)(len(buffer))
 
 	copy(buffer[0:BOX_BOXZEROBYTES], BOX_PADDING)
 	copy(buffer[BOX_BOXZEROBYTES:], ciphertext)
 
-	rc := C.crypto_box_open_afternm((*C.uchar)(unsafe.Pointer(&buffer[0])),
-		(*C.uchar)(unsafe.Pointer(&buffer[0])),
-		(C.ulonglong)(len(buffer)),
-		(*C.uchar)(unsafe.Pointer(&nonce[0])),
-		(*C.uchar)(unsafe.Pointer(&key[0])))
+	rc := C.crypto_box_open_afternm(makePtr(buffer),
+		makePtr(buffer),
+		N,
+		makePtr(nonce),
+		makePtr(key))
 
 	if rc == 0 {
 		return buffer[BOX_ZEROBYTES:], nil
