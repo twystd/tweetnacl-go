@@ -62,8 +62,8 @@ func CryptoBoxKeyPair() (*KeyPair, error) {
 //
 // Encrypts and authenticates the message using the secretKey, publicKey and nonce. The zero padding
 // required by the crypto_box C API is added internally and should not be included in the supplied
-// message. Likewise the zero padding that prefixes the ciphertext returned by the crypto_box C API
-// is stripped from the returned ciphertext.
+// ciphertext. Likewise the zero padding that prefixes the ciphertext returned by the crypto_box C
+// API is stripped from the returned ciphertext.
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBox(message, nonce, publicKey, secretKey []byte) ([]byte, error) {
