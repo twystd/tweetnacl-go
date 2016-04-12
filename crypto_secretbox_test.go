@@ -2,6 +2,7 @@ package tweetnacl
 
 import (
 	"bytes"
+	"math/rand"
 	"testing"
 )
 
@@ -346,35 +347,73 @@ func BenchmarkCryptoSecretBoxOpen(b *testing.B) {
 
 // LOOP TESTS
 
-//// Adapted from tests/secretbox7.c
-//func TestCryptoSecretBoxLoop(t *testing.T) {
-//	for mlen := 0; mlen < ROUNDS; mlen++ {
-//		message := make([]byte, mlen)
-//		nonce := make([]byte, SECRETBOX_NONCEBYTES)
-//		key := make([]byte, SECRETBOX_KEYBYTES)
-//
-//		rand.Read(message)
-//		rand.Read(nonce)
-//		rand.Read(key)
-//
-//		ciphertext, err := CryptoSecretBox(message, nonce, key)
-//
-//		if err != nil {
-//			t.Errorf("LOOP TEST: encryption error (%v)", err)
-//			return
-//		}
-//
-//		plaintext, err := CryptoBoxSecretBoxOpen(ciphertext, nonce, key)
-//
-//		if err != nil {
-//			t.Errorf("LOOP TEST: decryption error (%v)", err)
-//			return
-//		}
-//
-//		if !bytes.Equal(message, plaintext) {
-//			t.Errorf("LOOP TEST: bad decryption (original :%v)", message)
-//			t.Errorf("LOOP TEST: bad decryption (decrypted:%v)", plaintext)
-//			return
-//		}
-//        }
-//
+// Adapted from tests/secretbox7.c
+func TestCryptoSecretBoxLoop(t *testing.T) {
+	for mlen := 0; mlen < ROUNDS; mlen++ {
+		message := make([]byte, mlen)
+		nonce := make([]byte, SECRETBOX_NONCEBYTES)
+		key := make([]byte, SECRETBOX_KEYBYTES)
+
+		rand.Read(message)
+		rand.Read(nonce)
+		rand.Read(key)
+
+		ciphertext, err := CryptoSecretBox(message, nonce, key)
+
+		if err != nil {
+			t.Errorf("LOOP TEST: encryption error (%v)", err)
+			return
+		}
+
+		plaintext, err := CryptoSecretBoxOpen(ciphertext, nonce, key)
+
+		if err != nil {
+			t.Errorf("LOOP TEST: decryption error (%v)", err)
+			return
+		}
+
+		if !bytes.Equal(message, plaintext) {
+			t.Errorf("LOOP TEST: bad decryption (original :%v)", message)
+			t.Errorf("LOOP TEST: bad decryption (decrypted:%v)", plaintext)
+			return
+		}
+	}
+}
+
+// Adapted from tests/secretbox8.c
+func TestCryptoSecretBoxCorruptedCiphertext(t *testing.T) {
+	for mlen := 0; mlen < ROUNDS; mlen++ {
+		message := make([]byte, mlen)
+		nonce := make([]byte, SECRETBOX_NONCEBYTES)
+		key := make([]byte, SECRETBOX_KEYBYTES)
+		caught := 0
+
+		rand.Read(message)
+		rand.Read(nonce)
+		rand.Read(key)
+
+		ciphertext, err := CryptoSecretBox(message, nonce, key)
+
+		if err != nil {
+			t.Errorf("CORRUPTED CIPHERTEXT: encryption error (%v)", err)
+			return
+		}
+
+		for caught < 10 {
+			ix := rand.Intn(len(ciphertext))
+			b := byte(rand.Intn(256))
+
+			ciphertext[ix] = b
+			plaintext, err := CryptoSecretBoxOpen(ciphertext, nonce, key)
+
+			if err == nil {
+				if !bytes.Equal(message, plaintext) {
+					t.Errorf("Forgery!!!")
+					return
+				}
+			}
+
+			caught++
+		}
+	}
+}

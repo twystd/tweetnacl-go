@@ -15,6 +15,9 @@ const BOX_PUBLICKEYBYTES int = 32
 // The number of bytes in a crypto_box secret key
 const BOX_SECRETKEYBYTES int = 32
 
+// The number of bytes for a crypto_box nonce.
+const BOX_NONCEBYTES int = 24
+
 // The number of zero padding bytes for a crypto_box message
 const BOX_ZEROBYTES int = 32
 

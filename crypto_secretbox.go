@@ -15,8 +15,11 @@ const SECRETBOX_ZEROBYTES int = 32
 // The number of zero padding bytes for a crypto_secretbox ciphertext
 const SECRETBOX_BOXZEROBYTES int = 16
 
-// The number of bytes in the nonce used with CryptoSecretBox and CryptoSecretBoxOpen.
+// The number of bytes in the nonce used with crypto_secretbox and crypto_secretbox_open.
 const SECRETBOX_NONCEBYTES int = 24
+
+// The number of bytes in the secret key used with crypto_secretbox and crypto_secretbox_open.
+const SECRETBOX_KEYBYTES int = 32
 
 // Constant zero-filled byte array used for padding messages
 var SECRETBOX_PADDING = []byte{0x00, 0x00, 0x00, 0x00,

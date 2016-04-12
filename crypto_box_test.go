@@ -322,7 +322,7 @@ func TestCryptoBoxLoop(t *testing.T) {
 		alice, _ := CryptoBoxKeyPair()
 		bob, _ := CryptoBoxKeyPair()
 		message := make([]byte, mlen)
-		nonce := make([]byte, 24)
+		nonce := make([]byte, BOX_NONCEBYTES)
 
 		rand.Read(nonce)
 		rand.Read(message)
@@ -355,7 +355,7 @@ func TestCryptoBoxCorruptedCiphertext(t *testing.T) {
 		alice, _ := CryptoBoxKeyPair()
 		bob, _ := CryptoBoxKeyPair()
 		message := make([]byte, mlen)
-		nonce := make([]byte, 24)
+		nonce := make([]byte, BOX_NONCEBYTES)
 		caught := 0
 
 		rand.Read(nonce)
@@ -392,7 +392,7 @@ func TestCryptoBoxCorruptedCiphertext(t *testing.T) {
 
 func ExampleCryptoBox() {
 	message := []byte("Neque porro quisquam est qui dolorem ipsum quia dolor sit amet")
-	nonce := make([]byte, 24)
+	nonce := make([]byte, BOX_NONCEBYTES)
 	alice, _ := CryptoBoxKeyPair()
 	bob, _ := CryptoBoxKeyPair()
 
@@ -419,7 +419,7 @@ func ExampleCryptoBox() {
 
 func ExampleCryptoBoxNM() {
 	message := make([]byte, 1024)
-	nonce := make([]byte, 24)
+	nonce := make([]byte, BOX_NONCEBYTES)
 	alice, _ := CryptoBoxKeyPair()
 	bob, _ := CryptoBoxKeyPair()
 
