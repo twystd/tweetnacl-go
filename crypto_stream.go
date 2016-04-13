@@ -65,3 +65,25 @@ func CryptoStreamXor(message, nonce, key []byte) ([]byte, error) {
 
 	return nil, fmt.Errorf("Error generating XOR-encrypted stream ciphertext (error code %v)", rc)
 }
+
+// Wrapper function for crypto_stream.
+//
+// Uses Salsa20 as the underlying cipher to produces a 'length' stream as a function of
+// the key and nonce.
+//
+// Ref. http://nacl.cr.yp.to/stream.html
+func CryptoStreamSalsa20(length int, nonce, key []byte) ([]byte, error) {
+	stream := make([]byte, length)
+	N := (C.ulonglong)(length)
+
+	rc := C.crypto_stream_salsa20(makePtr(stream),
+		N,
+		makePtr(nonce),
+		makePtr(key))
+
+	if rc == 0 {
+		return stream, nil
+	}
+
+	return nil, fmt.Errorf("Error generating SALSA-20 cipher stream (error code %v)", rc)
+}
