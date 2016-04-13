@@ -43,7 +43,6 @@ TODO
 1. Unit tests for zero length messages
 2. Either add validation to byte array argument lengths or unit tests to check that it does fail when
    the supplied arguments are invalid.
-3. Validate CryptoHash/CryptoHashBlocks against known SHA-512
 
 References
 ----------
