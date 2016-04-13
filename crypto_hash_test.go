@@ -2,7 +2,9 @@ package tweetnacl
 
 import (
 	"bytes"
+	"crypto/sha512"
 	"fmt"
+	"math/rand"
 	"testing"
 )
 
@@ -45,6 +47,27 @@ func TestCryptoHash(t *testing.T) {
 	if !bytes.Equal(hash, expected) {
 		t.Errorf("crypto_hash: invalid SHA-512 hash (%v)", hash)
 		return
+	}
+}
+
+func TestCryptoHashLoop(t *testing.T) {
+	for mlen := 0; mlen < ROUNDS; mlen++ {
+		message := make([]byte, mlen)
+
+		rand.Read(message)
+
+		reference := sha512.Sum512(message)
+		hash, err := CryptoHash(message)
+
+		if err != nil {
+			t.Errorf("LOOP TEST: crypto_hash error (%v)", err)
+			return
+		}
+
+		if !bytes.Equal(hash, reference[:]) {
+			t.Errorf("LOOP TEST: invalid hash [%x][%x]", reference, hash)
+			return
+		}
 	}
 }
 
