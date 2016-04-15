@@ -18,12 +18,6 @@ const SIGN_PUBLICKEYBYTES int = 32
 // The number of bytes in a signing key pair secret key.
 const SIGN_SECRETKEYBYTES int = 64
 
-// The number of bytes in a secret for the crypto_verify_16 function.
-const VERIFY16_BYTES int = 16
-
-// The number of bytes in a secret for the crypto_verify_32 function.
-const VERIFY32_BYTES int = 32
-
 // Wrapper function for crypto_sign_keypair.
 //
 // Randomly generates a secret key and corresponding public key.
