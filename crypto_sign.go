@@ -44,7 +44,11 @@ func CryptoSignKeyPair() (*KeyPair, error) {
 
 // Wrapper function for crypto_sign.
 //
-// Signs a message using a secret signing key and returns the signed message.
+// Signs a message using a secret signing key and returns the signed message. Be
+// aware that this function internally allocates a buffer the same size as the
+// signed message.
+//
+//
 //
 // Ref. http://nacl.cr.yp.to/sign.html
 func CryptoSign(message, key []byte) ([]byte, error) {
@@ -64,4 +68,30 @@ func CryptoSign(message, key []byte) ([]byte, error) {
 	}
 
 	return nil, fmt.Errorf("Error signing message (error code %v)", rc)
+}
+
+// Wrapper function for crypto_sign_open.
+//
+// Verifies a signed message against a public key. Be warned that this function
+// reuses the 'signed' message to store the unsigned message i.e. use a copy
+// of the signed message if retaining it is important.
+//
+// Ref. http://nacl.cr.yp.to/sign.html
+func CryptoSignOpen(signed, key []byte) ([]byte, error) {
+	message := make([]byte, len(signed))
+	N := uint64(len(message))
+	M := uint64(len(signed))
+
+	rc := C.crypto_sign_open(
+		makePtr(message),
+		(*C.ulonglong)(&N),
+		makePtr(signed),
+		(C.ulonglong)(M),
+		makePtr(key))
+
+	if rc == 0 {
+		return message[M-N:], nil
+	}
+
+	return nil, fmt.Errorf("Error opening signed message (error code %v)", rc)
 }
