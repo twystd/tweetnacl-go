@@ -19,3 +19,7 @@ benchmark:
 coverage:
 	go test -cover .
 
+debug:
+	gofmt -w=true *.go
+	go test -run TestED25519
+

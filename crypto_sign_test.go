@@ -1,7 +1,11 @@
 package tweetnacl
 
 import (
+	"bufio"
 	"bytes"
+	"encoding/hex"
+	"os"
+	"strings"
 	"testing"
 )
 
@@ -249,4 +253,120 @@ func BenchmarkCryptoSignOpen(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		CryptoSignOpen(signed, key)
 	}
+}
+
+// Adapted from http://ed25519.cr.yp.to/python/sign.py.
+func TestED25519(t *testing.T) {
+	file, _ := os.Open("sign.input")
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		tokens := strings.Split(line, ":")
+
+		if len(tokens) < 4 {
+			t.Errorf("Invalid line in file sign.input [%s]", line)
+			return
+		}
+
+		sk, _ := hex.DecodeString(tokens[0])
+		pk, _ := hex.DecodeString(tokens[1])
+		m, _ := hex.DecodeString(tokens[2])
+		sm, _ := hex.DecodeString(tokens[3])
+
+		signed, err := CryptoSign(m, sk)
+
+		if err != nil {
+			t.Errorf("Error signing message [%v]", err)
+			return
+		}
+
+		if !bytes.Equal(signed, sm) {
+			t.Errorf("Invalid signed message - expected [%x]", sm)
+			t.Errorf("                       - received [%x]", signed)
+			return
+		}
+
+		message, err := CryptoSignOpen(sm, pk)
+
+		if err != nil {
+			t.Errorf("Error opening signed message [%v]", err)
+			return
+		}
+
+		if !bytes.Equal(message, m) {
+			t.Errorf("Invalid opened message - expected %x", m)
+			t.Errorf("                       - received %x", message)
+			return
+		}
+
+		forgedm := forge(m)
+		forgedsm := forgesm(sm)
+
+		signed, err = CryptoSign(forgedm, sk)
+
+		if err != nil {
+			t.Errorf("Error signing forged message [%v]", err)
+			return
+		}
+
+		if bytes.Equal(signed, sm) {
+			t.Errorf("Valid forgery [%x][%x]", m, forgedm)
+			return
+		}
+
+		message, err = CryptoSignOpen(forgedsm, pk)
+
+		if err == nil {
+			if bytes.Equal(message, m) {
+				t.Errorf("Valid signed forgery [%x][%x]", sm, forgedsm)
+				return
+			}
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		t.Errorf("Error reading file sign.input [%v]", err)
+		return
+	}
+}
+
+func forge(m []byte) []byte {
+	if len(m) == 0 {
+		return []byte("x")
+	}
+
+	fm := make([]byte, len(m))
+	ix := len(fm) - 1
+
+	copy(fm, m)
+
+	fm[ix] = byte((fm[ix] & 0x00ff) + 1)
+
+	return fm
+}
+
+func forgesm(sm []byte) []byte {
+	N := 1
+	if len(sm) != SIGN_BYTES {
+		N = len(sm) - SIGN_BYTES
+	}
+
+	fm := make([]byte, N)
+	ix := len(fm) - 1
+
+	if len(sm) == SIGN_BYTES {
+		copy(fm, []byte("x"))
+	} else {
+		copy(fm, sm)
+
+		fm[ix] = byte((fm[ix] & 0x00ff) + 1)
+	}
+
+	fsm := make([]byte, SIGN_BYTES+len(fm))
+
+	copy(fsm[0:SIGN_BYTES], sm)
+	copy(fsm[SIGN_BYTES:], fm)
+
+	return fsm
 }
