@@ -41,3 +41,27 @@ func CryptoSignKeyPair() (*KeyPair, error) {
 
 	return nil, fmt.Errorf("Error generating signing key pair (error code %v)", rc)
 }
+
+// Wrapper function for crypto_sign.
+//
+// Signs a message using a secret signing key and returns the signed message.
+//
+// Ref. http://nacl.cr.yp.to/sign.html
+func CryptoSign(message, key []byte) ([]byte, error) {
+	signed := make([]byte, len(message)+SIGN_BYTES)
+	N := uint64(len(signed))
+	M := len(message)
+
+	rc := C.crypto_sign(
+		makePtr(signed),
+		(*C.ulonglong)(&N),
+		makePtr(message),
+		(C.ulonglong)(M),
+		makePtr(key))
+
+	if rc == 0 {
+		return signed, nil
+	}
+
+	return nil, fmt.Errorf("Error signing message (error code %v)", rc)
+}
