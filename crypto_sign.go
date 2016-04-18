@@ -84,7 +84,7 @@ func CryptoSignOpen(signed, key []byte) ([]byte, error) {
 		makePtr(key))
 
 	if rc == 0 {
-		return message[M-N:], nil
+		return message[:N], nil
 	}
 
 	return nil, fmt.Errorf("Error opening signed message (error code %v)", rc)

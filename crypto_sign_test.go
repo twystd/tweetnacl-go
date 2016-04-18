@@ -200,7 +200,7 @@ func TestCryptoSignOpen(t *testing.T) {
 	}
 
 	if !bytes.Equal(message, expected) {
-		t.Errorf("Invalid unsigned message [% x]", signed)
+		t.Errorf("Invalid unsigned message [% x]", message)
 		return
 	}
 }
