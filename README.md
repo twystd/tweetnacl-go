@@ -43,7 +43,6 @@ TODO
 1. Unit tests for zero length messages
 2. Add validation to byte array argument lengths (and unit tests)
 3. Figure out how hashblocks maps to SHA512
-4. crypto_sign_open is failing input.sign test
 
 References
 ----------
