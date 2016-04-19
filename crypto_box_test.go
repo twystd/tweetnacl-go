@@ -156,12 +156,12 @@ func TestCryptoBoxKeyPair(t *testing.T) {
 		return
 	}
 
-	if keypair.PublicKey == nil || len(keypair.PublicKey) != 32 {
+	if keypair.PublicKey == nil || len(keypair.PublicKey) != BOX_PUBLICKEYBYTES {
 		t.Errorf("cryptobox_keypair: invalid public key")
 		return
 	}
 
-	if keypair.SecretKey == nil || len(keypair.SecretKey) != 32 {
+	if keypair.SecretKey == nil || len(keypair.SecretKey) != BOX_SECRETKEYBYTES {
 		t.Errorf("cryptobox_keypair: invalid secret key")
 		return
 	}
@@ -177,22 +177,23 @@ func BenchmarkCryptoBoxKeyPair(b *testing.B) {
 
 // Adapted from tests/box.c
 func TestCryptoBox(t *testing.T) {
-	ciphertext, err := CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
+	message := MESSAGE
+	expected := CIPHERTEXT
+	ciphertext, err := CryptoBox(message, NONCE, BOBPK, ALICESK)
 
-	if err != nil {
-		t.Errorf("cryptobox: %v", err)
-		return
+	verify(t, "Invalid ciphertext", expected, ciphertext, err)
+}
+
+func TestCryptoBoxWithZeroLengthMessage(t *testing.T) {
+	message := make([]byte, 0)
+	expected := []byte{
+		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
+		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80,
 	}
 
-	if ciphertext == nil {
-		t.Errorf("cryptobox: nil")
-		return
-	}
+	ciphertext, err := CryptoBox(message, NONCE, BOBPK, ALICESK)
 
-	if !bytes.Equal(ciphertext, CIPHERTEXT) {
-		t.Errorf("cryptobox: invalid ciphertext (%v)", ciphertext)
-		return
-	}
+	verify(t, "Invalid ciphertext", expected, ciphertext, err)
 }
 
 func BenchmarkCryptoBox(b *testing.B) {

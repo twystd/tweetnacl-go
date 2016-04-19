@@ -87,7 +87,7 @@ func CryptoBox(message, nonce, publicKey, secretKey []byte) ([]byte, error) {
 		return buffer[BOX_BOXZEROBYTES:], nil
 	}
 
-	return nil, fmt.Errorf("Error encrypting message (error code %v)", rc)
+	return nil, fmt.Errorf("Error encrypting message (%v)", rc)
 }
 
 // Wrapper function for crypto_box_open.
