@@ -1,5 +1,4 @@
-all: format    \
-     build     \
+all: 
 	 test      \
 	 benchmark \
      coverage
@@ -7,19 +6,19 @@ all: format    \
 format: 
 	gofmt -w=true *.go
 
-build: 
+build: format
 	go build 
 
-test:
+test: build
 	go test
 
-benchmark:
+benchmark: build
 	go test -bench .
 
-coverage:
+coverage: build
 	go test -cover .
 
-debug:
+debug: build
 	gofmt -w=true *.go
 	go test -run TestED25519
 

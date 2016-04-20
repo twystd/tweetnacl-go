@@ -146,13 +146,7 @@ func TestCryptoBoxWithInvalidNonce(t *testing.T) {
 
 	ciphertext, err := CryptoBox(MESSAGE, nonce, BOBPK, ALICESK)
 
-	if err == nil {
-		t.Errorf("\nExpected error (INVALID NONCE)")
-	}
-
-	if ciphertext != nil {
-		t.Errorf("\nExpected 'nil' ciphertext")
-	}
+	verifyErr(t, "invalid nonce", ciphertext, err)
 }
 
 func TestCryptoBoxWithInvalidPublicKey(t *testing.T) {
@@ -164,13 +158,7 @@ func TestCryptoBoxWithInvalidPublicKey(t *testing.T) {
 
 	ciphertext, err := CryptoBox(MESSAGE, NONCE, pk, ALICESK)
 
-	if err == nil {
-		t.Errorf("\nExpected error (INVALID PUBLIC KEY)")
-	}
-
-	if ciphertext != nil {
-		t.Errorf("\nExpected 'nil' ciphertext")
-	}
+	verifyErr(t, "invalid public key", ciphertext, err)
 }
 
 func TestCryptoBoxWithInvalidSecretKey(t *testing.T) {
@@ -197,20 +185,50 @@ func BenchmarkCryptoBox(b *testing.B) {
 func TestCryptoBoxOpen(t *testing.T) {
 	plaintext, err := CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, BOBSK)
 
-	if err != nil {
-		t.Errorf("cryptobox_open: %v", err)
-		return
+	verify(t, "Invalid plaintext", MESSAGE, plaintext, err)
+}
+
+func TestCryptoBoxOpenWithZeroLengthCipherText(t *testing.T) {
+	ciphertext := make([]byte, 0)
+	plaintext, err := CryptoBoxOpen(ciphertext, NONCE, ALICEPK, BOBSK)
+
+	verifyErr(t, "invalid plaintext", plaintext, err)
+}
+
+func TestCryptoBoxOpenWithInvalidNonce(t *testing.T) {
+	nonce := []byte{
+		0x69, 0x69, 0x6e, 0xe9, 0x55, 0xb6, 0x2b, 0x73,
+		0xcd, 0x62, 0xbd, 0xa8, 0x75, 0xfc, 0x73, 0xd6,
+		0x82, 0x19, 0xe0, 0x03, 0x6b, 0x7a, 0x0b,
 	}
 
-	if plaintext == nil {
-		t.Errorf("cryptobox_open: nil")
-		return
-	}
+	plaintext, err := CryptoBoxOpen(CIPHERTEXT, nonce, ALICEPK, BOBSK)
 
-	if !bytes.Equal(plaintext, MESSAGE) {
-		t.Errorf("cryptobox_open: invalid plaintext (%v)", plaintext)
-		return
-	}
+	verifyErr(t, "invalid nonce", plaintext, err)
+}
+
+func TestCryptoBoxOpenWithInvalidPublicKey(t *testing.T) {
+	pk := []byte{
+		0x85, 0x20, 0xf0, 0x09, 0x89, 0x30, 0xa7, 0x54,
+		0x74, 0x8b, 0x7d, 0xdc, 0xb4, 0x3e, 0xf7, 0x5a,
+		0x0d, 0xbf, 0x3a, 0x0d, 0x26, 0x38, 0x1a, 0xf4,
+		0xeb, 0xa4, 0xa9, 0x8e, 0xaa, 0x9b, 0x4e}
+
+	plaintext, err := CryptoBoxOpen(CIPHERTEXT, NONCE, pk, BOBSK)
+
+	verifyErr(t, "invalid public key", plaintext, err)
+}
+
+func TestCryptoBoxOpenWithInvalidSecretKey(t *testing.T) {
+	sk := []byte{
+		0x5d, 0xab, 0x08, 0x7e, 0x62, 0x4a, 0x8a, 0x4b,
+		0x79, 0xe1, 0x7f, 0x8b, 0x83, 0x80, 0x0e, 0xe6,
+		0x6f, 0x3b, 0xb1, 0x29, 0x26, 0x18, 0xb6, 0xfd,
+		0x1c, 0x2f, 0x8b, 0x27, 0xff, 0x88, 0xe0}
+
+	plaintext, err := CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, sk)
+
+	verifyErr(t, "invalid secret key", plaintext, err)
 }
 
 func BenchmarkCryptoBoxOpen(b *testing.B) {

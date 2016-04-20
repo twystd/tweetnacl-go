@@ -111,6 +111,18 @@ func CryptoBox(message, nonce, publicKey, secretKey []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxOpen(ciphertext, nonce, publicKey, secretKey []byte) ([]byte, error) {
+	if len(nonce) != BOX_NONCEBYTES {
+		return nil, fmt.Errorf("Error decrypting message (%v)", "invalid nonce")
+	}
+
+	if len(publicKey) != BOX_PUBLICKEYBYTES {
+		return nil, fmt.Errorf("Error decrypting message (%v)", "invalid public key")
+	}
+
+	if len(secretKey) != BOX_SECRETKEYBYTES {
+		return nil, fmt.Errorf("Error decrypting message (%v)", "invalid secret key")
+	}
+
 	buffer := make([]byte, len(ciphertext)+BOX_BOXZEROBYTES)
 	N := (C.ulonglong)(len(buffer))
 
