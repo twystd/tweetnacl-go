@@ -40,8 +40,8 @@ Notes
 
 TODO
 ----
-1. Unit tests for zero length messages
-2. Add validation to byte array argument lengths (and unit tests)
+1. Add validation to byte array argument lengths (and unit tests)
+2. Unit tests for zero length messages
 3. Figure out how hashblocks maps to SHA512
 
 References
