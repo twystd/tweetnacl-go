@@ -154,6 +154,14 @@ func CryptoBoxOpen(ciphertext, nonce, publicKey, secretKey []byte) ([]byte, erro
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxBeforeNM(publicKey, secretKey []byte) ([]byte, error) {
+	if len(publicKey) != BOX_PUBLICKEYBYTES {
+		return nil, fmt.Errorf("Error generating shared key(%v)", "invalid public key")
+	}
+
+	if len(secretKey) != BOX_SECRETKEYBYTES {
+		return nil, fmt.Errorf("Error generating shared key (%v)", "invalid secret key")
+	}
+
 	key := make([]byte, BOX_BEFORENMBYTES)
 
 	rc := C.crypto_box_beforenm(makePtr(key),

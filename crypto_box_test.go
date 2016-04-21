@@ -242,20 +242,31 @@ func BenchmarkCryptoBoxOpen(b *testing.B) {
 func TestCryptoBoxBeforeNM(t *testing.T) {
 	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
 
-	if err != nil {
-		t.Errorf("cryptobox_beforenm: %v", err)
-		return
-	}
+	verify(t, "Invalid shared key", KEY, key, err)
+}
 
-	if key == nil {
-		t.Errorf("cryptobox_beforenm: nil")
-		return
-	}
+func TestCryptoBoxBeforeNMWithInvalidPublicKey(t *testing.T) {
+	pk := []byte{
+		0xde, 0x9e, 0xdb, 0x7d, 0x7b, 0x7d, 0xc1, 0xb4,
+		0xd3, 0x5b, 0x61, 0xc2, 0xec, 0xe4, 0x35, 0x37,
+		0x3f, 0x83, 0x43, 0xc8, 0x5b, 0x78, 0x67, 0x4d,
+		0xad, 0xfc, 0x7e, 0x14, 0x6f, 0x88, 0x2b}
 
-	if !bytes.Equal(key, KEY) {
-		t.Errorf("cryptobox_beforenm: invalid shared key (%v)", key)
-		return
-	}
+	key, err := CryptoBoxBeforeNM(pk, ALICESK)
+
+	verifyErr(t, "invalid public key", key, err)
+}
+
+func TestCryptoBoxBeforeNMWithInvalidSecretKey(t *testing.T) {
+	sk := []byte{
+		0x77, 0x07, 0x6d, 0x0a, 0x73, 0x18, 0xa5, 0x7d,
+		0x3c, 0x16, 0xc1, 0x72, 0x51, 0xb2, 0x66, 0x45,
+		0xdf, 0x4c, 0x2f, 0x87, 0xeb, 0xc0, 0x99, 0x2a,
+		0xb1, 0x77, 0xfb, 0xa5, 0x1d, 0xb9, 0x2c}
+
+	key, err := CryptoBoxBeforeNM(BOBPK, sk)
+
+	verifyErr(t, "invalid secret key", key, err)
 }
 
 func BenchmarkCryptoBoxBeforeNM(b *testing.B) {
