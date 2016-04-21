@@ -281,20 +281,41 @@ func TestCryptoBoxAfteNM(t *testing.T) {
 	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
 	ciphertext, err := CryptoBoxAfterNM(MESSAGE, NONCE, key)
 
-	if err != nil {
-		t.Errorf("cryptobox_afternm: %v", err)
-		return
+	verify(t, "Invalid ciphertext", CIPHERTEXT, ciphertext, err)
+}
+
+func TestCryptoBoxAfterNMWithZeroLengthMessage(t *testing.T) {
+	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	message := make([]byte, 0)
+	expected := []byte{
+		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
+		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80,
 	}
 
-	if ciphertext == nil {
-		t.Errorf("cryptobox_afternm: nil")
-		return
+	ciphertext, err := CryptoBoxAfterNM(message, NONCE, key)
+
+	verify(t, "Invalid ciphertext", expected, ciphertext, err)
+}
+
+func TestCryptoBoxAfterNMWithInvalidNonce(t *testing.T) {
+	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	nonce := []byte{
+		0x69, 0x69, 0x6e, 0xe9, 0x55, 0xb6, 0x2b, 0x73,
+		0xcd, 0x62, 0xbd, 0xa8, 0x75, 0xfc, 0x73, 0xd6,
+		0x82, 0x19, 0xe0, 0x03, 0x6b, 0x7a, 0x0b,
 	}
 
-	if !bytes.Equal(ciphertext, CIPHERTEXT) {
-		t.Errorf("cryptobox_afternm: invalid ciphertext (%v)", ciphertext)
-		return
-	}
+	ciphertext, err := CryptoBoxAfterNM(MESSAGE, nonce, key)
+
+	verifyErr(t, "invalid nonce", ciphertext, err)
+}
+
+func TestCryptoBoxWithAfterNMInvalidKey(t *testing.T) {
+	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+
+	ciphertext, err := CryptoBoxAfterNM(MESSAGE, NONCE, key[:BOX_BEFORENMBYTES-1])
+
+	verifyErr(t, "invalid shared key", ciphertext, err)
 }
 
 func BenchmarkCryptoBoxAfterNM(b *testing.B) {
