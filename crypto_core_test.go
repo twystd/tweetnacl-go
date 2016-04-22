@@ -181,108 +181,63 @@ func BenchmarkCryptoHSalsa20(b *testing.B) {
 func TestCryptoCoreSalsa20(t *testing.T) {
 
 	in := []byte{
-		101, 102, 103, 104,
-		105, 106, 107, 108,
-		109, 110, 111, 112,
-		113, 114, 115, 116}
+		101, 102, 103, 104, 105, 106, 107, 108,
+		109, 110, 111, 112, 113, 114, 115, 116}
 
 	key := []byte{
-		1, 2, 3, 4,
-		5, 6, 7, 8,
-		9, 10, 11, 12,
-		13, 14, 15, 16,
-		201, 202, 203, 204,
-		205, 206, 207, 208,
-		209, 210, 211, 212,
-		213, 214, 215, 216}
+		1, 2, 3, 4, 5, 6, 7, 8,
+		9, 10, 11, 12, 13, 14, 15, 16,
+		201, 202, 203, 204, 205, 206, 207, 208,
+		209, 210, 211, 212, 213, 214, 215, 216}
 
 	constant := []byte{
-		101, 120, 112, 97,
-		110, 100, 32, 51,
-		50, 45, 98, 121,
-		116, 101, 32, 107}
+		101, 120, 112, 97, 110, 100, 32, 51,
+		50, 45, 98, 121, 116, 101, 32, 107}
 
 	expected := []byte{
-		69, 37, 68, 39,
-		41, 15, 107, 193,
-		255, 139, 122, 6,
-		170, 233, 217, 98,
-		89, 144, 182, 106,
-		21, 51, 200, 65,
-		239, 49, 222, 34,
-		215, 114, 40, 126,
-		104, 197, 7, 225,
-		197, 153, 31, 2,
-		102, 78, 76, 176,
-		84, 245, 246, 184,
-		177, 160, 133, 130,
-		6, 72, 149, 119,
-		192, 195, 132, 236,
-		234, 103, 246, 74}
+		69, 37, 68, 39, 41, 15, 107, 193,
+		255, 139, 122, 6, 170, 233, 217, 98,
+		89, 144, 182, 106, 21, 51, 200, 65,
+		239, 49, 222, 34, 215, 114, 40, 126,
+		104, 197, 7, 225, 197, 153, 31, 2,
+		102, 78, 76, 176, 84, 245, 246, 184,
+		177, 160, 133, 130, 6, 72, 149, 119,
+		192, 195, 132, 236, 234, 103, 246, 74}
 
 	out, err := CryptoCoreSalsa20(in, key, constant)
 
-	if err != nil {
-		t.Errorf("cryptocore_salsa20: %v", err)
-		return
-	}
-
-	if out == nil {
-		t.Errorf("cryptocore_salsa20: nil")
-		return
-	}
-
-	if !bytes.Equal(out, expected) {
-		t.Errorf("cryptocore_salsa20: invalid intermediate key (%v)", out)
-		return
-	}
+	verify(t, "Invalid SALSA-20 key", expected, out, err)
 }
 
 // Adapted from tests/core6.c
 func TestCryptoCoreSalsa20X(t *testing.T) {
 	in := []byte{
-		0x81, 0x91, 0x8e, 0xf2,
-		0xa5, 0xe0, 0xda, 0x9b,
-		0x3e, 0x90, 0x60, 0x52,
-		0x1e, 0x4b, 0xb3, 0x52}
+		0x81, 0x91, 0x8e, 0xf2, 0xa5, 0xe0, 0xda, 0x9b,
+		0x3e, 0x90, 0x60, 0x52, 0x1e, 0x4b, 0xb3, 0x52}
 
 	key := []byte{
-		0xee, 0x30, 0x4f, 0xca,
-		0x27, 0x00, 0x8d, 0x8c,
-		0x12, 0x6f, 0x90, 0x02,
-		0x79, 0x01, 0xd8, 0x0f,
-		0x7f, 0x1d, 0x8b, 0x8d,
-		0xc9, 0x36, 0xcf, 0x3b,
-		0x9f, 0x81, 0x96, 0x92,
-		0x82, 0x7e, 0x57, 0x77}
+		0xee, 0x30, 0x4f, 0xca, 0x27, 0x00, 0x8d, 0x8c,
+		0x12, 0x6f, 0x90, 0x02, 0x79, 0x01, 0xd8, 0x0f,
+		0x7f, 0x1d, 0x8b, 0x8d, 0xc9, 0x36, 0xcf, 0x3b,
+		0x9f, 0x81, 0x96, 0x92, 0x82, 0x7e, 0x57, 0x77}
 
 	constant := []byte{
-		101, 120, 112, 97,
-		110, 100, 32, 51,
-		50, 45, 98, 121,
-		116, 101, 32, 107}
+		101, 120, 112, 97, 110, 100, 32, 51,
+		50, 45, 98, 121, 116, 101, 32, 107}
 
 	expected := []byte{
-		0xbc, 0x1b, 0x30, 0xfc,
-		0x07, 0x2c, 0xc1, 0x40,
-		0x75, 0xe4, 0xba, 0xa7,
-		0x31, 0xb5, 0xa8, 0x45,
-		0xea, 0x9b, 0x11, 0xe9,
-		0xa5, 0x19, 0x1f, 0x94,
-		0xe1, 0x8c, 0xba, 0x8f,
-		0xd8, 0x21, 0xa7, 0xcd}
+		0x21, 0x94, 0xa0, 0x5d, 0x9a, 0x52, 0x01, 0x48,
+		0x57, 0xe8, 0x20, 0x61, 0xf9, 0x06, 0x5f, 0x61,
+		0xfd, 0xe9, 0x8a, 0xba, 0x75, 0x90, 0xe1, 0x73, 0x6b,
+		0x2d, 0xa0, 0xdb, 0x4a, 0xfa, 0xf9, 0x2f, 0x1f, 0x1d,
+		0x1b, 0xe2, 0xf6, 0x6c, 0x5a, 0x20, 0xa7, 0x11, 0x1d,
+		0x21, 0x78, 0x2b, 0x1e, 0xdd, 0x2f, 0x54, 0x9a, 0x9a,
+		0x3d, 0xe6, 0xe7, 0x62, 0xb8, 0x5e, 0x21, 0x24,
+		0xa5, 0x1a, 0xc9, 0xb0}
 
 	out, err := CryptoCoreSalsa20(in, key, constant)
 
-	if err != nil {
-		t.Errorf("cryptocore_salsa20: %v", err)
-		return
-	}
-
-	if out == nil {
-		t.Errorf("cryptocore_salsa20: nil")
-		return
-	}
+	verify(t, "Invalid SALSA-20 key", expected, out, err)
 
 	buffer := make([]byte, len(expected))
 	var ix int = 0
@@ -324,10 +279,73 @@ func TestCryptoCoreSalsa20X(t *testing.T) {
 		}
 	}
 
-	//	if !bytes.Equal(out, expected) {
-	//		t.Errorf("cryptocore_salsa20: invalid intermediate key (%v)", out)
-	//		return
-	//	}
+	t.Errorf("cryptocore_salsa20: LOOKS LIKE THIS TEST IS INCOMPLETE")
+	if !bytes.Equal(out, expected) {
+		t.Errorf("cryptocore_salsa20: invalid intermediate key (%v)", out)
+		return
+	}
+}
+
+func TestCryptoCoreSalsa20WithInvalidSharedSecret(t *testing.T) {
+	in := []byte{
+		101, 102, 103, 104, 105, 106, 107, 108,
+		109, 110, 111, 112, 113, 114, 115}
+
+	key := []byte{
+		1, 2, 3, 4, 5, 6, 7, 8,
+		9, 10, 11, 12, 13, 14, 15, 16,
+		201, 202, 203, 204, 205, 206, 207, 208,
+		209, 210, 211, 212, 213, 214, 215, 216}
+
+	constant := []byte{
+		101, 120, 112, 97, 110, 100, 32, 51,
+		50, 45, 98, 121, 116, 101, 32, 107}
+
+	out, err := CryptoCoreSalsa20(in, key, constant)
+
+	verifyErr(t, "invalid shared secret", out, err)
+}
+
+func TestCryptoCoreSalsa20WithInvalidSecretKey(t *testing.T) {
+
+	in := []byte{
+		101, 102, 103, 104, 105, 106, 107, 108,
+		109, 110, 111, 112, 113, 114, 115, 116}
+
+	key := []byte{
+		1, 2, 3, 4, 5, 6, 7, 8,
+		9, 10, 11, 12, 13, 14, 15, 16,
+		201, 202, 203, 204, 205, 206, 207, 208,
+		209, 210, 211, 212, 213, 214, 215}
+
+	constant := []byte{
+		101, 120, 112, 97, 110, 100, 32, 51,
+		50, 45, 98, 121, 116, 101, 32, 107}
+
+	out, err := CryptoCoreSalsa20(in, key, constant)
+
+	verifyErr(t, "invalid secret key", out, err)
+}
+
+func TestCryptoCoreSalsa20WithInvalidConstant(t *testing.T) {
+
+	in := []byte{
+		101, 102, 103, 104, 105, 106, 107, 108,
+		109, 110, 111, 112, 113, 114, 115, 116}
+
+	key := []byte{
+		1, 2, 3, 4, 5, 6, 7, 8,
+		9, 10, 11, 12, 13, 14, 15, 16,
+		201, 202, 203, 204, 205, 206, 207, 208,
+		209, 210, 211, 212, 213, 214, 215, 216}
+
+	constant := []byte{
+		101, 120, 112, 97, 110, 100, 32, 51,
+		50, 45, 98, 121, 116, 101, 32}
+
+	out, err := CryptoCoreSalsa20(in, key, constant)
+
+	verifyErr(t, "invalid constant", out, err)
 }
 
 func BenchmarkCryptoSalsa20(b *testing.B) {
