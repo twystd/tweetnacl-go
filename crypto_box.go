@@ -220,6 +220,14 @@ func CryptoBoxAfterNM(message, nonce, key []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/box.html
 func CryptoBoxOpenAfterNM(ciphertext, nonce, key []byte) ([]byte, error) {
+	if len(nonce) != BOX_NONCEBYTES {
+		return nil, fmt.Errorf("Error decrypting message (%v)", "invalid nonce")
+	}
+
+	if len(key) != BOX_BEFORENMBYTES {
+		return nil, fmt.Errorf("Error decrypting message (%v)", "invalid shared key")
+	}
+
 	buffer := make([]byte, len(ciphertext)+BOX_BOXZEROBYTES)
 	N := (C.ulonglong)(len(buffer))
 
