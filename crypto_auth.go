@@ -21,6 +21,11 @@ const ONETIMEAUTH_KEYBYTES int = 32
 //
 // Ref. http://nacl.cr.yp.to/onetimeauth.html
 func CryptoOneTimeAuth(message, key []byte) ([]byte, error) {
+
+	if len(key) != ONETIMEAUTH_KEYBYTES {
+		return nil, fmt.Errorf("Error calculating one time authenticator (%v)", "invalid key")
+	}
+
 	authenticator := make([]byte, ONETIMEAUTH_BYTES)
 	N := (C.ulonglong)(len(message))
 
@@ -33,7 +38,7 @@ func CryptoOneTimeAuth(message, key []byte) ([]byte, error) {
 		return authenticator, nil
 	}
 
-	return nil, fmt.Errorf("Error calculating one time authenticator (error code %v)", rc)
+	return nil, fmt.Errorf("Error calculating one time authenticator (%v)", rc)
 }
 
 // Wrapper function for crypto_onetimeauth_verify.
