@@ -47,6 +47,15 @@ func CryptoOneTimeAuth(message, key []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/onetimeauth.html
 func CryptoOneTimeAuthVerify(authenticator, message, key []byte) (bool, error) {
+
+	if len(authenticator) != ONETIMEAUTH_BYTES {
+		return false, fmt.Errorf("Error verifying one time authenticator (%v)", "invalid authenticator")
+	}
+
+	if len(key) != ONETIMEAUTH_KEYBYTES {
+		return false, fmt.Errorf("Error verifying one time authenticator (%v)", "invalid key")
+	}
+
 	N := (C.ulonglong)(len(message))
 
 	rc := C.crypto_onetimeauth_verify(makePtr(authenticator),
@@ -58,5 +67,5 @@ func CryptoOneTimeAuthVerify(authenticator, message, key []byte) (bool, error) {
 		return true, nil
 	}
 
-	return false, fmt.Errorf("Error calculating one time authenticator (error code %v)", rc)
+	return false, fmt.Errorf("Error verifying one time authenticator (error code %v)", rc)
 }
