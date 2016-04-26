@@ -122,7 +122,7 @@ func BenchmarkCryptoBoxKeyPair(b *testing.B) {
 func TestCryptoBox(t *testing.T) {
 	ciphertext, err := CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
 
-	verify(t, "Invalid ciphertext", CIPHERTEXT, ciphertext, err)
+	verify(t, "invalid ciphertext", CIPHERTEXT, ciphertext, err)
 }
 
 func TestCryptoBoxWithZeroLengthMessage(t *testing.T) {
@@ -134,7 +134,7 @@ func TestCryptoBoxWithZeroLengthMessage(t *testing.T) {
 
 	ciphertext, err := CryptoBox(message, NONCE, BOBPK, ALICESK)
 
-	verify(t, "Invalid ciphertext", expected, ciphertext, err)
+	verify(t, "invalid ciphertext", expected, ciphertext, err)
 }
 
 func TestCryptoBoxWithInvalidNonce(t *testing.T) {

@@ -61,4 +61,3 @@ func CryptoHash(message []byte) ([]byte, error) {
 //
 //     return nil, fmt.Errorf("Error calculating running SHA-512 hash (error code %v)", rc)
 // }
-//

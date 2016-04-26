@@ -20,7 +20,11 @@ const SCALARMULT_SCALARBYTES int = 32
 // Computes the scalar product of a standard group element and an integer <code>n</code>.
 //
 // Ref. http://nacl.cr.yp.to/scalarmult.html
-func CryptoScalarMultBase(n []byte) ([]byte, error) {
+func ScalarMultBase(n []byte) ([]byte, error) {
+	if len(n) != SCALARMULT_SCALARBYTES {
+		return nil, fmt.Errorf("Error calculating base scalar product (%v)", "invalid integer")
+	}
+
 	q := make([]byte, SCALARMULT_BYTES)
 	rc := C.crypto_scalarmult_base(makePtr(q), makePtr(n))
 
@@ -28,7 +32,7 @@ func CryptoScalarMultBase(n []byte) ([]byte, error) {
 		return q, nil
 	}
 
-	return nil, fmt.Errorf("Error calculating base scalar multiplication (error code %v)", rc)
+	return nil, fmt.Errorf("Error calculating base scalar scalar product (%v)", rc)
 }
 
 // Wrapper function for crypto_scalarmult.
@@ -36,7 +40,15 @@ func CryptoScalarMultBase(n []byte) ([]byte, error) {
 // Computes the scalar product of a group element p and an integer n.
 //
 // Ref. http://nacl.cr.yp.to/scalarmult.html
-func CryptoScalarMult(n, p []byte) ([]byte, error) {
+func ScalarMult(n, p []byte) ([]byte, error) {
+	if len(n) != SCALARMULT_SCALARBYTES {
+		return nil, fmt.Errorf("Error calculating scalar product (%v)", "invalid integer")
+	}
+
+	if len(p) != SCALARMULT_BYTES {
+		return nil, fmt.Errorf("Error calculating scalar product (%v)", "invalid group element")
+	}
+
 	q := make([]byte, SCALARMULT_BYTES)
 	rc := C.crypto_scalarmult(makePtr(q), makePtr(n), makePtr(p))
 

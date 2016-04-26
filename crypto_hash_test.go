@@ -78,7 +78,7 @@ func ExampleCryptoHash() {
 		return
 	}
 
-	fmt.Printf("[%x]", hash)
+	fmt.Printf("%x", hash)
 
-	// Output: [5dfaeb09829a546d8adcef4437957814b7b2f44a128600ab0e4f5322c6150cf5c33957f13055b9266e370c199bb764d4f38bb277b5f345e890d2e0bb3992c4dd]
+	// Output: 5dfaeb09829a546d8adcef4437957814b7b2f44a128600ab0e4f5322c6150cf5c33957f13055b9266e370c199bb764d4f38bb277b5f345e890d2e0bb3992c4dd
 }
