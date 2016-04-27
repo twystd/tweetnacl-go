@@ -41,6 +41,14 @@ var SECRETBOX_PADDING = []byte{0x00, 0x00, 0x00, 0x00,
 //
 // Ref. http://nacl.cr.yp.to/secretbox.html
 func CryptoSecretBox(message, nonce, key []byte) ([]byte, error) {
+	if len(nonce) != SECRETBOX_NONCEBYTES {
+		return nil, fmt.Errorf("Error encrypting message (%v)", "invalid nonce")
+	}
+
+	if len(key) != SECRETBOX_KEYBYTES {
+		return nil, fmt.Errorf("Error encrypting message (%v)", "invalid key")
+	}
+
 	buffer := make([]byte, len(message)+SECRETBOX_ZEROBYTES)
 	N := (C.ulonglong)(len(buffer))
 
