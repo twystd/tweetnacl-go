@@ -109,7 +109,7 @@ func CryptoStreamSalsa20(length int, nonce, key []byte) ([]byte, error) {
 		return stream, nil
 	}
 
-	return nil, fmt.Errorf("Error generating SALSA-20 cipher stream (error code %v)", rc)
+	return nil, fmt.Errorf("Error generating SALSA-20 cipher stream (%v)", rc)
 }
 
 // Wrapper function for crypto_stream_salsa20_xor.
@@ -120,6 +120,14 @@ func CryptoStreamSalsa20(length int, nonce, key []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/stream.html
 func CryptoStreamSalsa20Xor(message, nonce, key []byte) ([]byte, error) {
+	if len(nonce) != STREAM_SALSA20_NONCEBYTES {
+		return nil, fmt.Errorf("Error generating SALSA-20 stream ciphertext (%v)", "invalid nonce")
+	}
+
+	if len(key) != STREAM_SALSA20_KEYBYTES {
+		return nil, fmt.Errorf("Error generating SALSA-20 stream ciphertext (%v)", "invalid key")
+	}
+
 	ciphertext := make([]byte, len(message))
 	N := (C.ulonglong)(len(ciphertext))
 
@@ -133,5 +141,5 @@ func CryptoStreamSalsa20Xor(message, nonce, key []byte) ([]byte, error) {
 		return ciphertext, nil
 	}
 
-	return nil, fmt.Errorf("Error generating SALSA-20 XOR-encrypted stream ciphertext (error code %v)", rc)
+	return nil, fmt.Errorf("Error generating SALSA-20 stream ciphertext (%v)", rc)
 }
