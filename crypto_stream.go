@@ -27,6 +27,14 @@ const STREAM_SALSA20_NONCEBYTES int = 8
 //
 // Ref. http://nacl.cr.yp.to/stream.html
 func CryptoStream(length int, nonce, key []byte) ([]byte, error) {
+	if len(nonce) != STREAM_NONCEBYTES {
+		return nil, fmt.Errorf("Error generating cipher stream (%v)", "invalid nonce")
+	}
+
+	if len(key) != STREAM_KEYBYTES {
+		return nil, fmt.Errorf("Error generating cipher stream (%v)", "invalid key")
+	}
+
 	stream := make([]byte, length)
 	N := (C.ulonglong)(length)
 
@@ -39,7 +47,7 @@ func CryptoStream(length int, nonce, key []byte) ([]byte, error) {
 		return stream, nil
 	}
 
-	return nil, fmt.Errorf("Error generating cipher stream (error code %v)", rc)
+	return nil, fmt.Errorf("Error generating cipher stream (%v)", rc)
 }
 
 // Wrapper function for crypto_stream_xor.
@@ -50,6 +58,14 @@ func CryptoStream(length int, nonce, key []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/stream.html
 func CryptoStreamXor(message, nonce, key []byte) ([]byte, error) {
+	if len(nonce) != STREAM_NONCEBYTES {
+		return nil, fmt.Errorf("Error generating stream ciphertext (%v)", "invalid nonce")
+	}
+
+	if len(key) != STREAM_KEYBYTES {
+		return nil, fmt.Errorf("Error generating stream ciphertext (%v)", "invalid key")
+	}
+
 	ciphertext := make([]byte, len(message))
 	N := (C.ulonglong)(len(ciphertext))
 
@@ -63,7 +79,7 @@ func CryptoStreamXor(message, nonce, key []byte) ([]byte, error) {
 		return ciphertext, nil
 	}
 
-	return nil, fmt.Errorf("Error generating XOR-encrypted stream ciphertext (error code %v)", rc)
+	return nil, fmt.Errorf("Error generating stream ciphertext (error code %v)", rc)
 }
 
 // Wrapper function for crypto_stream_salsa20.
