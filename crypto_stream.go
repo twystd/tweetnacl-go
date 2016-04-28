@@ -89,6 +89,14 @@ func CryptoStreamXor(message, nonce, key []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/stream.html
 func CryptoStreamSalsa20(length int, nonce, key []byte) ([]byte, error) {
+	if len(nonce) != STREAM_SALSA20_NONCEBYTES {
+		return nil, fmt.Errorf("Error generating SALSA-20 cipher stream (%v)", "invalid nonce")
+	}
+
+	if len(key) != STREAM_SALSA20_KEYBYTES {
+		return nil, fmt.Errorf("Error generating SALSA-20 cipher stream (%v)", "invalid key")
+	}
+
 	stream := make([]byte, length)
 	N := (C.ulonglong)(length)
 
