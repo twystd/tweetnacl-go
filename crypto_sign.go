@@ -33,7 +33,7 @@ func CryptoSignKeyPair() (*KeyPair, error) {
 		return &KeyPair{PublicKey: pk, SecretKey: sk}, nil
 	}
 
-	return nil, fmt.Errorf("Error generating signing key pair (error code %v)", rc)
+	return nil, fmt.Errorf("Error generating signing key pair (%v)", rc)
 }
 
 // Wrapper function for crypto_sign.
@@ -46,6 +46,10 @@ func CryptoSignKeyPair() (*KeyPair, error) {
 //
 // Ref. http://nacl.cr.yp.to/sign.html
 func CryptoSign(message, key []byte) ([]byte, error) {
+	if len(key) != SIGN_SECRETKEYBYTES {
+		return nil, fmt.Errorf("Error signing message (%v)", "invalid secret key")
+	}
+
 	signed := make([]byte, len(message)+SIGN_BYTES)
 	N := uint64(len(signed))
 	M := len(message)
@@ -61,7 +65,7 @@ func CryptoSign(message, key []byte) ([]byte, error) {
 		return signed, nil
 	}
 
-	return nil, fmt.Errorf("Error signing message (error code %v)", rc)
+	return nil, fmt.Errorf("Error signing message (%v)", rc)
 }
 
 // Wrapper function for crypto_sign_open.
@@ -72,6 +76,10 @@ func CryptoSign(message, key []byte) ([]byte, error) {
 //
 // Ref. http://nacl.cr.yp.to/sign.html
 func CryptoSignOpen(signed, key []byte) ([]byte, error) {
+	if len(key) != SIGN_PUBLICKEYBYTES {
+		return nil, fmt.Errorf("Error opening signed message (%v)", "invalid public key")
+	}
+
 	message := make([]byte, len(signed))
 	N := uint64(len(message))
 	M := uint64(len(signed))
@@ -87,5 +95,5 @@ func CryptoSignOpen(signed, key []byte) ([]byte, error) {
 		return message[:N], nil
 	}
 
-	return nil, fmt.Errorf("Error opening signed message (error code %v)", rc)
+	return nil, fmt.Errorf("Error opening signed message (%v)", rc)
 }
