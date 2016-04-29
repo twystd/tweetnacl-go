@@ -50,6 +50,14 @@ func CryptoVerify16(x, y []byte) (bool, error) {
 //
 // Ref. http://nacl.cr.yp.to/verify.html
 func CryptoVerify32(x, y []byte) (bool, error) {
+	if len(x) != VERIFY32_BYTES {
+		return false, fmt.Errorf("Error verifying 32 byte arrays (%v)", "invalid X")
+	}
+
+	if len(y) != VERIFY32_BYTES {
+		return false, fmt.Errorf("Error verifying 32 byte arrays (%v)", "invalid Y")
+	}
+
 	rc := C.crypto_verify_32(makePtr(x), makePtr(y))
 
 	if rc == 0 {
@@ -60,5 +68,5 @@ func CryptoVerify32(x, y []byte) (bool, error) {
 		return false, nil
 	}
 
-	return false, fmt.Errorf("Error verifying 32 byte arrays (error code %v)", rc)
+	return false, fmt.Errorf("Error verifying 32 byte arrays (%v)", rc)
 }
