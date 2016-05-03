@@ -40,9 +40,10 @@ Notes
 
 TODO
 ----
-1. Add validation to byte array argument lengths (and unit tests)
-2. Unit tests for zero length messages
-3. Figure out how hashblocks maps to SHA512
+1. Figure out how hashblocks maps to SHA512
+2. Move tests out of main package
+3. Repackage as crypto/tweetnacl/wrapper
+4. Fork go-tweetnacl and merge code
 
 References
 ----------

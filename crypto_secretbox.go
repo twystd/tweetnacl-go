@@ -89,7 +89,7 @@ func CryptoSecretBoxOpen(ciphertext, nonce, key []byte) ([]byte, error) {
 	buffer := make([]byte, len(ciphertext)+SECRETBOX_BOXZEROBYTES)
 	N := (C.ulonglong)(len(buffer))
 
-	copy(buffer[0:SECRETBOX_BOXZEROBYTES], BOX_PADDING)
+	copy(buffer[0:SECRETBOX_BOXZEROBYTES], SECRETBOX_PADDING)
 	copy(buffer[SECRETBOX_BOXZEROBYTES:], ciphertext)
 
 	rc := C.crypto_secretbox_open(makePtr(buffer),
