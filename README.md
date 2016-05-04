@@ -40,10 +40,9 @@ Notes
 
 TODO
 ----
-1. Figure out how hashblocks maps to SHA512
-2. Move tests out of main package
-3. Repackage as crypto/tweetnacl/wrapper
-4. Fork go-tweetnacl and merge code
+1. Move tests out of main package
+2. Repackage as crypto/tweetnacl/wrapper
+3. Fork go-tweetnacl and merge code
 
 References
 ----------

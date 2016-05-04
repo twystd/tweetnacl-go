@@ -19,5 +19,5 @@ coverage: build
 
 debug: build
 	gofmt -w=true *.go
-	go test -run TestED25519
+	go test -run TestCryptoHashBlocks
 
