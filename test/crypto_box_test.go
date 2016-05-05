@@ -1,6 +1,7 @@
-package tweetnacl
+package test
 
 import (
+	".."
 	"bytes"
 	"fmt"
 	"math/rand"
@@ -87,7 +88,7 @@ const ROUNDS int = 100 // TODO change to 10000 when done
 // --- CryptoBoxKeyPair ---
 
 func TestCryptoBoxKeyPair(t *testing.T) {
-	keypair, err := CryptoBoxKeyPair()
+	keypair, err := tweetnacl.CryptoBoxKeyPair()
 
 	if err != nil {
 		t.Errorf("cryptobox_keypair: %v", err)
@@ -99,12 +100,12 @@ func TestCryptoBoxKeyPair(t *testing.T) {
 		return
 	}
 
-	if keypair.PublicKey == nil || len(keypair.PublicKey) != BOX_PUBLICKEYBYTES {
+	if keypair.PublicKey == nil || len(keypair.PublicKey) != tweetnacl.BOX_PUBLICKEYBYTES {
 		t.Errorf("cryptobox_keypair: invalid public key")
 		return
 	}
 
-	if keypair.SecretKey == nil || len(keypair.SecretKey) != BOX_SECRETKEYBYTES {
+	if keypair.SecretKey == nil || len(keypair.SecretKey) != tweetnacl.BOX_SECRETKEYBYTES {
 		t.Errorf("cryptobox_keypair: invalid secret key")
 		return
 	}
@@ -112,7 +113,7 @@ func TestCryptoBoxKeyPair(t *testing.T) {
 
 func BenchmarkCryptoBoxKeyPair(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		CryptoBoxKeyPair()
+		tweetnacl.CryptoBoxKeyPair()
 	}
 }
 
@@ -120,7 +121,7 @@ func BenchmarkCryptoBoxKeyPair(b *testing.B) {
 
 // Adapted from tests/box.c
 func TestCryptoBox(t *testing.T) {
-	ciphertext, err := CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
+	ciphertext, err := tweetnacl.CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
 
 	verify(t, "invalid ciphertext", CIPHERTEXT, ciphertext, err)
 }
@@ -132,7 +133,7 @@ func TestCryptoBoxWithZeroLengthMessage(t *testing.T) {
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80,
 	}
 
-	ciphertext, err := CryptoBox(message, NONCE, BOBPK, ALICESK)
+	ciphertext, err := tweetnacl.CryptoBox(message, NONCE, BOBPK, ALICESK)
 
 	verify(t, "invalid ciphertext", expected, ciphertext, err)
 }
@@ -144,7 +145,7 @@ func TestCryptoBoxWithInvalidNonce(t *testing.T) {
 		0x82, 0x19, 0xe0, 0x03, 0x6b, 0x7a, 0x0b,
 	}
 
-	ciphertext, err := CryptoBox(MESSAGE, nonce, BOBPK, ALICESK)
+	ciphertext, err := tweetnacl.CryptoBox(MESSAGE, nonce, BOBPK, ALICESK)
 
 	verifyErr(t, "invalid nonce", ciphertext, err)
 }
@@ -156,7 +157,7 @@ func TestCryptoBoxWithInvalidPublicKey(t *testing.T) {
 		0x3f, 0x83, 0x43, 0xc8, 0x5b, 0x78, 0x67, 0x4d,
 		0xad, 0xfc, 0x7e, 0x14, 0x6f, 0x88, 0x2b}
 
-	ciphertext, err := CryptoBox(MESSAGE, NONCE, pk, ALICESK)
+	ciphertext, err := tweetnacl.CryptoBox(MESSAGE, NONCE, pk, ALICESK)
 
 	verifyErr(t, "invalid public key", ciphertext, err)
 }
@@ -168,14 +169,14 @@ func TestCryptoBoxWithInvalidSecretKey(t *testing.T) {
 		0xdf, 0x4c, 0x2f, 0x87, 0xeb, 0xc0, 0x99, 0x2a,
 		0xb1, 0x77, 0xfb, 0xa5, 0x1d, 0xb9, 0x2c}
 
-	ciphertext, err := CryptoBox(MESSAGE, NONCE, BOBPK, sk)
+	ciphertext, err := tweetnacl.CryptoBox(MESSAGE, NONCE, BOBPK, sk)
 
 	verifyErr(t, "invalid secret key", ciphertext, err)
 }
 
 func BenchmarkCryptoBox(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
+		tweetnacl.CryptoBox(MESSAGE, NONCE, BOBPK, ALICESK)
 	}
 }
 
@@ -183,14 +184,14 @@ func BenchmarkCryptoBox(b *testing.B) {
 
 // Adapted from tests/box2.c
 func TestCryptoBoxOpen(t *testing.T) {
-	plaintext, err := CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, BOBSK)
+	plaintext, err := tweetnacl.CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, BOBSK)
 
 	verify(t, "Invalid plaintext", MESSAGE, plaintext, err)
 }
 
 func TestCryptoBoxOpenWithZeroLengthCipherText(t *testing.T) {
 	ciphertext := make([]byte, 0)
-	plaintext, err := CryptoBoxOpen(ciphertext, NONCE, ALICEPK, BOBSK)
+	plaintext, err := tweetnacl.CryptoBoxOpen(ciphertext, NONCE, ALICEPK, BOBSK)
 
 	verifyErr(t, "invalid plaintext", plaintext, err)
 }
@@ -202,7 +203,7 @@ func TestCryptoBoxOpenWithInvalidNonce(t *testing.T) {
 		0x82, 0x19, 0xe0, 0x03, 0x6b, 0x7a, 0x0b,
 	}
 
-	plaintext, err := CryptoBoxOpen(CIPHERTEXT, nonce, ALICEPK, BOBSK)
+	plaintext, err := tweetnacl.CryptoBoxOpen(CIPHERTEXT, nonce, ALICEPK, BOBSK)
 
 	verifyErr(t, "invalid nonce", plaintext, err)
 }
@@ -214,7 +215,7 @@ func TestCryptoBoxOpenWithInvalidPublicKey(t *testing.T) {
 		0x0d, 0xbf, 0x3a, 0x0d, 0x26, 0x38, 0x1a, 0xf4,
 		0xeb, 0xa4, 0xa9, 0x8e, 0xaa, 0x9b, 0x4e}
 
-	plaintext, err := CryptoBoxOpen(CIPHERTEXT, NONCE, pk, BOBSK)
+	plaintext, err := tweetnacl.CryptoBoxOpen(CIPHERTEXT, NONCE, pk, BOBSK)
 
 	verifyErr(t, "invalid public key", plaintext, err)
 }
@@ -226,21 +227,21 @@ func TestCryptoBoxOpenWithInvalidSecretKey(t *testing.T) {
 		0x6f, 0x3b, 0xb1, 0x29, 0x26, 0x18, 0xb6, 0xfd,
 		0x1c, 0x2f, 0x8b, 0x27, 0xff, 0x88, 0xe0}
 
-	plaintext, err := CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, sk)
+	plaintext, err := tweetnacl.CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, sk)
 
 	verifyErr(t, "invalid secret key", plaintext, err)
 }
 
 func BenchmarkCryptoBoxOpen(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, BOBSK)
+		tweetnacl.CryptoBoxOpen(CIPHERTEXT, NONCE, ALICEPK, BOBSK)
 	}
 }
 
 // --- CryptoBoxBeforeNM ---
 
 func TestCryptoBoxBeforeNM(t *testing.T) {
-	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	key, err := tweetnacl.CryptoBoxBeforeNM(BOBPK, ALICESK)
 
 	verify(t, "Invalid shared key", KEY, key, err)
 }
@@ -252,7 +253,7 @@ func TestCryptoBoxBeforeNMWithInvalidPublicKey(t *testing.T) {
 		0x3f, 0x83, 0x43, 0xc8, 0x5b, 0x78, 0x67, 0x4d,
 		0xad, 0xfc, 0x7e, 0x14, 0x6f, 0x88, 0x2b}
 
-	key, err := CryptoBoxBeforeNM(pk, ALICESK)
+	key, err := tweetnacl.CryptoBoxBeforeNM(pk, ALICESK)
 
 	verifyErr(t, "invalid public key", key, err)
 }
@@ -264,109 +265,109 @@ func TestCryptoBoxBeforeNMWithInvalidSecretKey(t *testing.T) {
 		0xdf, 0x4c, 0x2f, 0x87, 0xeb, 0xc0, 0x99, 0x2a,
 		0xb1, 0x77, 0xfb, 0xa5, 0x1d, 0xb9, 0x2c}
 
-	key, err := CryptoBoxBeforeNM(BOBPK, sk)
+	key, err := tweetnacl.CryptoBoxBeforeNM(BOBPK, sk)
 
 	verifyErr(t, "invalid secret key", key, err)
 }
 
 func BenchmarkCryptoBoxBeforeNM(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		CryptoBoxBeforeNM(BOBPK, ALICESK)
+		tweetnacl.CryptoBoxBeforeNM(BOBPK, ALICESK)
 	}
 }
 
 // --- CryptoBoxAfterNM ---
 
 func TestCryptoBoxAfteNM(t *testing.T) {
-	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
-	ciphertext, err := CryptoBoxAfterNM(MESSAGE, NONCE, key)
+	key, err := tweetnacl.CryptoBoxBeforeNM(BOBPK, ALICESK)
+	ciphertext, err := tweetnacl.CryptoBoxAfterNM(MESSAGE, NONCE, key)
 
 	verify(t, "Invalid ciphertext", CIPHERTEXT, ciphertext, err)
 }
 
 func TestCryptoBoxAfterNMWithZeroLengthMessage(t *testing.T) {
-	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	key, err := tweetnacl.CryptoBoxBeforeNM(BOBPK, ALICESK)
 	message := make([]byte, 0)
 	expected := []byte{
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80,
 	}
 
-	ciphertext, err := CryptoBoxAfterNM(message, NONCE, key)
+	ciphertext, err := tweetnacl.CryptoBoxAfterNM(message, NONCE, key)
 
 	verify(t, "Invalid ciphertext", expected, ciphertext, err)
 }
 
 func TestCryptoBoxAfterNMWithInvalidNonce(t *testing.T) {
-	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	key, err := tweetnacl.CryptoBoxBeforeNM(BOBPK, ALICESK)
 	nonce := []byte{
 		0x69, 0x69, 0x6e, 0xe9, 0x55, 0xb6, 0x2b, 0x73,
 		0xcd, 0x62, 0xbd, 0xa8, 0x75, 0xfc, 0x73, 0xd6,
 		0x82, 0x19, 0xe0, 0x03, 0x6b, 0x7a, 0x0b,
 	}
 
-	ciphertext, err := CryptoBoxAfterNM(MESSAGE, nonce, key)
+	ciphertext, err := tweetnacl.CryptoBoxAfterNM(MESSAGE, nonce, key)
 
 	verifyErr(t, "invalid nonce", ciphertext, err)
 }
 
 func TestCryptoBoxWithAfterNMInvalidKey(t *testing.T) {
-	key, err := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	key, err := tweetnacl.CryptoBoxBeforeNM(BOBPK, ALICESK)
 
-	ciphertext, err := CryptoBoxAfterNM(MESSAGE, NONCE, key[:BOX_BEFORENMBYTES-1])
+	ciphertext, err := tweetnacl.CryptoBoxAfterNM(MESSAGE, NONCE, key[:tweetnacl.BOX_BEFORENMBYTES-1])
 
 	verifyErr(t, "invalid shared key", ciphertext, err)
 }
 
 func BenchmarkCryptoBoxAfterNM(b *testing.B) {
-	key, _ := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	key, _ := tweetnacl.CryptoBoxBeforeNM(BOBPK, ALICESK)
 	for i := 0; i < b.N; i++ {
-		CryptoBoxAfterNM(MESSAGE, NONCE, key)
+		tweetnacl.CryptoBoxAfterNM(MESSAGE, NONCE, key)
 	}
 }
 
 // --- CryptoBoxOpenAfterNM ---
 
 func TestCryptoBoxOpenAfteNM(t *testing.T) {
-	key, _ := CryptoBoxBeforeNM(ALICEPK, BOBSK)
-	plaintext, err := CryptoBoxOpenAfterNM(CIPHERTEXT, NONCE, key)
+	key, _ := tweetnacl.CryptoBoxBeforeNM(ALICEPK, BOBSK)
+	plaintext, err := tweetnacl.CryptoBoxOpenAfterNM(CIPHERTEXT, NONCE, key)
 
 	verify(t, "Invalid plaintext", MESSAGE, plaintext, err)
 }
 
 func TestCryptoBoxOpenAfterNMWithZeroLengthCipherText(t *testing.T) {
-	key, _ := CryptoBoxBeforeNM(ALICEPK, BOBSK)
+	key, _ := tweetnacl.CryptoBoxBeforeNM(ALICEPK, BOBSK)
 	ciphertext := make([]byte, 0)
-	plaintext, err := CryptoBoxOpenAfterNM(ciphertext, NONCE, key)
+	plaintext, err := tweetnacl.CryptoBoxOpenAfterNM(ciphertext, NONCE, key)
 
 	verifyErr(t, "invalid plaintext", plaintext, err)
 }
 
 func TestCryptoBoxOpenAfterNMWithInvalidNonce(t *testing.T) {
-	key, _ := CryptoBoxBeforeNM(ALICEPK, BOBSK)
+	key, _ := tweetnacl.CryptoBoxBeforeNM(ALICEPK, BOBSK)
 	nonce := []byte{
 		0x69, 0x69, 0x6e, 0xe9, 0x55, 0xb6, 0x2b, 0x73,
 		0xcd, 0x62, 0xbd, 0xa8, 0x75, 0xfc, 0x73, 0xd6,
 		0x82, 0x19, 0xe0, 0x03, 0x6b, 0x7a, 0x0b,
 	}
 
-	plaintext, err := CryptoBoxOpenAfterNM(CIPHERTEXT, nonce, key)
+	plaintext, err := tweetnacl.CryptoBoxOpenAfterNM(CIPHERTEXT, nonce, key)
 
 	verifyErr(t, "invalid nonce", plaintext, err)
 }
 
 func TestCryptoBoxOpenAfterNMWithInvalidKey(t *testing.T) {
-	key, _ := CryptoBoxBeforeNM(ALICEPK, BOBSK)
+	key, _ := tweetnacl.CryptoBoxBeforeNM(ALICEPK, BOBSK)
 
-	plaintext, err := CryptoBoxOpenAfterNM(CIPHERTEXT, NONCE, key[:len(key)-1])
+	plaintext, err := tweetnacl.CryptoBoxOpenAfterNM(CIPHERTEXT, NONCE, key[:len(key)-1])
 
 	verifyErr(t, "invalid shared key", plaintext, err)
 }
 
 func BenchmarkCryptoBoxOpenAfterNM(b *testing.B) {
-	key, _ := CryptoBoxBeforeNM(BOBPK, ALICESK)
+	key, _ := tweetnacl.CryptoBoxBeforeNM(BOBPK, ALICESK)
 	for i := 0; i < b.N; i++ {
-		CryptoBoxAfterNM(MESSAGE, NONCE, key)
+		tweetnacl.CryptoBoxAfterNM(MESSAGE, NONCE, key)
 	}
 }
 
@@ -375,22 +376,22 @@ func BenchmarkCryptoBoxOpenAfterNM(b *testing.B) {
 // Adapted from tests/box7.c
 func TestCryptoBoxLoop(t *testing.T) {
 	for mlen := 0; mlen < ROUNDS; mlen++ {
-		alice, _ := CryptoBoxKeyPair()
-		bob, _ := CryptoBoxKeyPair()
+		alice, _ := tweetnacl.CryptoBoxKeyPair()
+		bob, _ := tweetnacl.CryptoBoxKeyPair()
 		message := make([]byte, mlen)
-		nonce := make([]byte, BOX_NONCEBYTES)
+		nonce := make([]byte, tweetnacl.BOX_NONCEBYTES)
 
 		rand.Read(nonce)
 		rand.Read(message)
 
-		ciphertext, err := CryptoBox(message, nonce, bob.PublicKey, alice.SecretKey)
+		ciphertext, err := tweetnacl.CryptoBox(message, nonce, bob.PublicKey, alice.SecretKey)
 
 		if err != nil {
 			t.Errorf("LOOP TEST: encryption error (%v)", err)
 			return
 		}
 
-		plaintext, err := CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
+		plaintext, err := tweetnacl.CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
 
 		if err != nil {
 			t.Errorf("LOOP TEST: decryption error (%v)", err)
@@ -408,16 +409,16 @@ func TestCryptoBoxLoop(t *testing.T) {
 // Adapted from tests/box8.c
 func TestCryptoBoxCorruptedCiphertext(t *testing.T) {
 	for mlen := 0; mlen < ROUNDS; mlen++ {
-		alice, _ := CryptoBoxKeyPair()
-		bob, _ := CryptoBoxKeyPair()
+		alice, _ := tweetnacl.CryptoBoxKeyPair()
+		bob, _ := tweetnacl.CryptoBoxKeyPair()
 		message := make([]byte, mlen)
-		nonce := make([]byte, BOX_NONCEBYTES)
+		nonce := make([]byte, tweetnacl.BOX_NONCEBYTES)
 		caught := 0
 
 		rand.Read(nonce)
 		rand.Read(message)
 
-		ciphertext, err := CryptoBox(message, nonce, bob.PublicKey, alice.SecretKey)
+		ciphertext, err := tweetnacl.CryptoBox(message, nonce, bob.PublicKey, alice.SecretKey)
 
 		if err != nil {
 			t.Errorf("CORRUPTED CIPHERTEXT: encryption error (%v)", err)
@@ -429,7 +430,7 @@ func TestCryptoBoxCorruptedCiphertext(t *testing.T) {
 			b := byte(rand.Intn(256))
 
 			ciphertext[ix] = b
-			plaintext, err := CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
+			plaintext, err := tweetnacl.CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
 
 			if err == nil {
 				if !bytes.Equal(message, plaintext) {
@@ -448,20 +449,20 @@ func TestCryptoBoxCorruptedCiphertext(t *testing.T) {
 
 func ExampleCryptoBox() {
 	message := []byte("Neque porro quisquam est qui dolorem ipsum quia dolor sit amet")
-	nonce := make([]byte, BOX_NONCEBYTES)
-	alice, _ := CryptoBoxKeyPair()
-	bob, _ := CryptoBoxKeyPair()
+	nonce := make([]byte, tweetnacl.BOX_NONCEBYTES)
+	alice, _ := tweetnacl.CryptoBoxKeyPair()
+	bob, _ := tweetnacl.CryptoBoxKeyPair()
 
 	rand.Read(nonce)
 
-	ciphertext, err := CryptoBox(message, nonce, bob.PublicKey, alice.SecretKey)
+	ciphertext, err := tweetnacl.CryptoBox(message, nonce, bob.PublicKey, alice.SecretKey)
 
 	if err != nil {
 		fmt.Printf("%v", err)
 		return
 	}
 
-	plaintext, err := CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
+	plaintext, err := tweetnacl.CryptoBoxOpen(ciphertext, nonce, alice.PublicKey, bob.SecretKey)
 
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -475,25 +476,25 @@ func ExampleCryptoBox() {
 
 func ExampleCryptoBoxNM() {
 	message := make([]byte, 1024)
-	nonce := make([]byte, BOX_NONCEBYTES)
-	alice, _ := CryptoBoxKeyPair()
-	bob, _ := CryptoBoxKeyPair()
+	nonce := make([]byte, tweetnacl.BOX_NONCEBYTES)
+	alice, _ := tweetnacl.CryptoBoxKeyPair()
+	bob, _ := tweetnacl.CryptoBoxKeyPair()
 
-	encryptKey, _ := CryptoBoxBeforeNM(bob.PublicKey, alice.SecretKey)
-	decryptKey, _ := CryptoBoxBeforeNM(alice.PublicKey, bob.SecretKey)
+	encryptKey, _ := tweetnacl.CryptoBoxBeforeNM(bob.PublicKey, alice.SecretKey)
+	decryptKey, _ := tweetnacl.CryptoBoxBeforeNM(alice.PublicKey, bob.SecretKey)
 
 	for i := 0; i < 1000; i++ {
 		rand.Read(nonce)
 		rand.Read(message)
 
-		ciphertext, err := CryptoBoxAfterNM(message, nonce, encryptKey)
+		ciphertext, err := tweetnacl.CryptoBoxAfterNM(message, nonce, encryptKey)
 
 		if err != nil {
 			fmt.Printf("%v", err)
 			return
 		}
 
-		plaintext, err := CryptoBoxOpenAfterNM(ciphertext, nonce, decryptKey)
+		plaintext, err := tweetnacl.CryptoBoxOpenAfterNM(ciphertext, nonce, decryptKey)
 
 		if err != nil {
 			fmt.Printf("%v", err)

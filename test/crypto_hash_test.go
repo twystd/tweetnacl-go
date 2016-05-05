@@ -1,6 +1,7 @@
-package tweetnacl
+package test
 
 import (
+	".."
 	"crypto/sha512"
 	"fmt"
 	"math/rand"
@@ -23,7 +24,7 @@ func TestCryptoHash(t *testing.T) {
 		0x1d, 0x13, 0x8b, 0xc7, 0xaa, 0xd1, 0xaf, 0x3e,
 		0xf7, 0xbf, 0xd5, 0xec, 0x64, 0x6d, 0x6c, 0x28}
 
-	hash, err := CryptoHash(message)
+	hash, err := tweetnacl.CryptoHash(message)
 
 	verify(t, "Invalid SHA-512 hash", expected, hash, err)
 }
@@ -40,7 +41,7 @@ func TestCryptoHashWithZeroLengthMessage(t *testing.T) {
 		0x63, 0xb9, 0x31, 0xbd, 0x47, 0x41, 0x7a, 0x81,
 		0xa5, 0x38, 0x32, 0x7a, 0xf9, 0x27, 0xda, 0x3e}
 
-	hash, err := CryptoHash(message)
+	hash, err := tweetnacl.CryptoHash(message)
 
 	verify(t, "Invalid SHA-512 hash", expected, hash, err)
 }
@@ -52,7 +53,7 @@ func TestCryptoHashLoop(t *testing.T) {
 		rand.Read(message)
 
 		expected := sha512.Sum512(message)
-		hash, err := CryptoHash(message)
+		hash, err := tweetnacl.CryptoHash(message)
 
 		verify(t, "Invalid SHA-512 hash", expected[:], hash, err)
 	}
@@ -62,7 +63,7 @@ func BenchmarkCryptoHash(b *testing.B) {
 	message := []byte("testing\n")
 
 	for i := 0; i < b.N; i++ {
-		CryptoHash(message)
+		tweetnacl.CryptoHash(message)
 	}
 }
 
@@ -71,7 +72,7 @@ func BenchmarkCryptoHash(b *testing.B) {
 func ExampleCryptoHash() {
 	message := []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor")
 
-	hash, err := CryptoHash(message)
+	hash, err := tweetnacl.CryptoHash(message)
 
 	if err != nil {
 		fmt.Printf("%v", err)

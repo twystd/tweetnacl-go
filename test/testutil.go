@@ -1,4 +1,4 @@
-package tweetnacl
+package test
 
 import (
 	"bytes"

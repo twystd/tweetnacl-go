@@ -40,9 +40,8 @@ Notes
 
 TODO
 ----
-1. Move tests out of main package
-2. Repackage as crypto/tweetnacl/wrapper
-3. Fork go-tweetnacl and merge code
+1. Repackage as wrapper
+2. Fork go-tweetnacl and merge code
 
 References
 ----------

@@ -1,6 +1,7 @@
-package tweetnacl
+package test
 
 import (
+	".."
 	"math/rand"
 	"testing"
 )
@@ -38,7 +39,7 @@ func TestCryptoOneTimeAuth(t *testing.T) {
 		0xf3, 0xff, 0xc7, 0x70, 0x3f, 0x94, 0x00, 0xe5,
 		0x2a, 0x7d, 0xfb, 0x4b, 0x3d, 0x33, 0x05, 0xd9}
 
-	authenticator, err := CryptoOneTimeAuth(message, key)
+	authenticator, err := tweetnacl.CryptoOneTimeAuth(message, key)
 
 	verify(t, "Invalid one time authenticator", expected, authenticator, err)
 }
@@ -55,7 +56,7 @@ func TestCryptoOneTimeAuthWithZeroLengthMessage(t *testing.T) {
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80}
 
-	authenticator, err := CryptoOneTimeAuth(message, key)
+	authenticator, err := tweetnacl.CryptoOneTimeAuth(message, key)
 
 	verify(t, "Invalid one time authenticator", expected, authenticator, err)
 }
@@ -86,7 +87,7 @@ func TestCryptoOneTimeAuthWithInvalidKey(t *testing.T) {
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8}
 
-	authenticator, err := CryptoOneTimeAuth(message, key)
+	authenticator, err := tweetnacl.CryptoOneTimeAuth(message, key)
 
 	verifyErr(t, "invalid one time auth key", authenticator, err)
 }
@@ -118,7 +119,7 @@ func BenchmarkCryptoOneTimeAuth(b *testing.B) {
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80}
 
 	for i := 0; i < b.N; i++ {
-		CryptoOneTimeAuth(message, key)
+		tweetnacl.CryptoOneTimeAuth(message, key)
 	}
 }
 
@@ -155,7 +156,7 @@ func TestCryptoOneTimeAuthVerify(t *testing.T) {
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80}
 
-	ok, err := CryptoOneTimeAuthVerify(authenticator, message, key)
+	ok, err := tweetnacl.CryptoOneTimeAuthVerify(authenticator, message, key)
 
 	verifyOk(t, "Invalid one time authenticator", true, ok, err)
 }
@@ -173,7 +174,7 @@ func TestCryptoOneTimeAuthVerifyWithZeroLengthMessage(t *testing.T) {
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80}
 
-	ok, err := CryptoOneTimeAuthVerify(authenticator, message, key)
+	ok, err := tweetnacl.CryptoOneTimeAuthVerify(authenticator, message, key)
 
 	verifyOk(t, "Invalid one time authenticator", true, ok, err)
 }
@@ -208,7 +209,7 @@ func TestCryptoOneTimeAuthVerifyWithInvalidAuthenticator(t *testing.T) {
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80}
 
-	ok, err := CryptoOneTimeAuthVerify(authenticator, message, key)
+	ok, err := tweetnacl.CryptoOneTimeAuthVerify(authenticator, message, key)
 
 	verifyOkErr(t, "invalid one time auth authenticator", ok, err)
 }
@@ -243,7 +244,7 @@ func TestCryptoOneTimeAuthVerifyWithInvalidKey(t *testing.T) {
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8}
 
-	ok, err := CryptoOneTimeAuthVerify(authenticator, message, key)
+	ok, err := tweetnacl.CryptoOneTimeAuthVerify(authenticator, message, key)
 
 	verifyOkErr(t, "invalid one time auth key", ok, err)
 }
@@ -251,27 +252,27 @@ func TestCryptoOneTimeAuthVerifyWithInvalidKey(t *testing.T) {
 // Adapted from tests/onetimeauth7.c
 func TestCryptoOneTimeAuthVerifyWithMutations(t *testing.T) {
 	for clen := 0; clen < ROUNDS; clen++ {
-		key := make([]byte, ONETIMEAUTH_KEYBYTES)
+		key := make([]byte, tweetnacl.ONETIMEAUTH_KEYBYTES)
 		message := make([]byte, clen)
 
 		rand.Read(key)
 		rand.Read(message)
 
-		authenticator, err := CryptoOneTimeAuth(message, key)
+		authenticator, err := tweetnacl.CryptoOneTimeAuth(message, key)
 
 		if err != nil {
 			t.Errorf("crypto_onetimeauth: %v", err)
 			return
 		}
 
-		if len(authenticator) != ONETIMEAUTH_BYTES {
+		if len(authenticator) != tweetnacl.ONETIMEAUTH_BYTES {
 			t.Errorf("crypto_onetimeauth_verify: %v", err)
 			return
 		}
 
 		if clen > 0 {
 			mx := rand.Intn(clen)
-			ax := rand.Intn(ONETIMEAUTH_BYTES)
+			ax := rand.Intn(tweetnacl.ONETIMEAUTH_BYTES)
 			m := make([]byte, len(message))
 			a := make([]byte, len(authenticator))
 
@@ -281,7 +282,7 @@ func TestCryptoOneTimeAuthVerifyWithMutations(t *testing.T) {
 			m[mx] = message[mx] + byte(1+rand.Intn(255))
 			a[ax] = authenticator[ax] + byte(1+rand.Intn(255))
 
-			ok, err := CryptoOneTimeAuthVerify(authenticator, m, key)
+			ok, err := tweetnacl.CryptoOneTimeAuthVerify(authenticator, m, key)
 
 			if err == nil {
 				t.Errorf("crypto_onetimeauth_verify: %s", "Verified forgery with altered message")
@@ -292,7 +293,7 @@ func TestCryptoOneTimeAuthVerifyWithMutations(t *testing.T) {
 				return
 			}
 
-			ok, err = CryptoOneTimeAuthVerify(a, message, key)
+			ok, err = tweetnacl.CryptoOneTimeAuthVerify(a, message, key)
 
 			if err == nil {
 				t.Errorf("crypto_onetimeauth_verify: %s", "Verified forgery with altered authentication")
@@ -304,7 +305,7 @@ func TestCryptoOneTimeAuthVerifyWithMutations(t *testing.T) {
 				return
 			}
 
-			ok, err = CryptoOneTimeAuthVerify(a, m, key)
+			ok, err = tweetnacl.CryptoOneTimeAuthVerify(a, m, key)
 
 			if err == nil {
 				t.Errorf("crypto_onetimeauth_verify: %s", "Verified forgery with altered message and authentication")
@@ -349,6 +350,6 @@ func BenchmarkCryptoOneTimeAuthVerify(b *testing.B) {
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80}
 
 	for i := 0; i < b.N; i++ {
-		CryptoOneTimeAuthVerify(authenticator, message, key)
+		tweetnacl.CryptoOneTimeAuthVerify(authenticator, message, key)
 	}
 }

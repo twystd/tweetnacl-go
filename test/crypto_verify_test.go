@@ -1,6 +1,7 @@
-package tweetnacl
+package test
 
 import (
+	".."
 	"bytes"
 	"math/rand"
 	"testing"
@@ -18,7 +19,7 @@ func TestCryptoVerify16(t *testing.T) {
 		rand.Read(y)
 
 		expected := bytes.Equal(x, y)
-		verified, err := CryptoVerify16(x, y)
+		verified, err := tweetnacl.CryptoVerify16(x, y)
 
 		if err != nil {
 			t.Errorf("%v", err)
@@ -31,7 +32,7 @@ func TestCryptoVerify16(t *testing.T) {
 		}
 
 		copy(y, x)
-		verified, err = CryptoVerify16(x, y)
+		verified, err = tweetnacl.CryptoVerify16(x, y)
 
 		if err != nil {
 			t.Errorf("%v", err)
@@ -49,7 +50,7 @@ func TestCryptoVerify16(t *testing.T) {
 
 			y[ix] = b
 			expected := bytes.Equal(x, y)
-			verified, err = CryptoVerify16(x, y)
+			verified, err = tweetnacl.CryptoVerify16(x, y)
 
 			if err != nil {
 				t.Errorf("%v", err)
@@ -73,7 +74,7 @@ func TestCryptoVerify16WithInvalidX(t *testing.T) {
 		0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
 		0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10}
 
-	verified, err := CryptoVerify16(x, y)
+	verified, err := tweetnacl.CryptoVerify16(x, y)
 
 	if err == nil {
 		t.Errorf("\nExpected error (%s)", "invalid X")
@@ -93,7 +94,7 @@ func TestCryptoVerify16WithInvalidY(t *testing.T) {
 		0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
 		0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32}
 
-	verified, err := CryptoVerify16(x, y)
+	verified, err := tweetnacl.CryptoVerify16(x, y)
 
 	if err == nil {
 		t.Errorf("\nExpected error (%s)", "invalid Y")
@@ -112,7 +113,7 @@ func BenchmarkCryptoVerify16(b *testing.B) {
 	rand.Read(y)
 
 	for i := 0; i < b.N; i++ {
-		CryptoVerify16(x, y)
+		tweetnacl.CryptoVerify16(x, y)
 	}
 }
 
@@ -128,7 +129,7 @@ func TestCryptoVerify32(t *testing.T) {
 		rand.Read(y)
 
 		expected := bytes.Equal(x, y)
-		verified, err := CryptoVerify32(x, y)
+		verified, err := tweetnacl.CryptoVerify32(x, y)
 
 		if err != nil {
 			t.Errorf("%v", err)
@@ -141,7 +142,7 @@ func TestCryptoVerify32(t *testing.T) {
 		}
 
 		copy(y, x)
-		verified, err = CryptoVerify32(x, y)
+		verified, err = tweetnacl.CryptoVerify32(x, y)
 
 		if err != nil {
 			t.Errorf("%v", err)
@@ -159,7 +160,7 @@ func TestCryptoVerify32(t *testing.T) {
 
 			y[ix] = b
 			expected := bytes.Equal(x, y)
-			verified, err = CryptoVerify32(x, y)
+			verified, err = tweetnacl.CryptoVerify32(x, y)
 
 			if err != nil {
 				t.Errorf("%v", err)
@@ -187,7 +188,7 @@ func TestCryptoVerify32WithInvalidX(t *testing.T) {
 		0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10,
 		0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef}
 
-	verified, err := CryptoVerify32(x, y)
+	verified, err := tweetnacl.CryptoVerify32(x, y)
 
 	if err == nil {
 		t.Errorf("\nExpected error (%s)", "invalid X")
@@ -211,7 +212,7 @@ func TestCryptoVerify32WithInvalidY(t *testing.T) {
 		0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10,
 		0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd}
 
-	verified, err := CryptoVerify32(x, y)
+	verified, err := tweetnacl.CryptoVerify32(x, y)
 
 	if err == nil {
 		t.Errorf("\nExpected error (%s)", "invalid Y")
@@ -230,6 +231,6 @@ func BenchmarkCryptoVerify32(b *testing.B) {
 	rand.Read(y)
 
 	for i := 0; i < b.N; i++ {
-		CryptoVerify32(x, y)
+		tweetnacl.CryptoVerify32(x, y)
 	}
 }

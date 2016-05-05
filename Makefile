@@ -1,23 +1,27 @@
+SRC = .
+TEST = ./test
+
 all: test      \
 	 benchmark \
      coverage
 
 format: 
-	gofmt -w=true *.go
+	gofmt -w=true ${SRC}/*.go
+	gofmt -w=true ${TEST}/*.go
 
 build: format
-	go build 
+	go build ${SRC}
 
 test: build
-	go test
+	go test ${TEST}
 
 benchmark: build
-	go test -bench .
+	go test ${TEST} -bench .
 
 coverage: build
-	go test -cover .
+	go test ${TEST} -cover .
 
 debug: build
-	gofmt -w=true *.go
-	go test -run TestCryptoHashBlocks
+	gofmt -w=true ${SRC}
+	go test ${TEST} -run TestCryptoHashBlocks
 

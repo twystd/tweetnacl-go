@@ -1,6 +1,7 @@
-package tweetnacl
+package test
 
 import (
+	".."
 	"bytes"
 	"math/rand"
 	"testing"
@@ -61,7 +62,7 @@ func TestCryptoSecretBox(t *testing.T) {
 		0x59, 0x9b, 0x1f, 0x65, 0x4c, 0xb4, 0x5a, 0x74,
 		0xe3, 0x55, 0xa5}
 
-	ciphertext, err := CryptoSecretBox(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoSecretBox(message, nonce, key)
 
 	verify(t, "invalid ciphertext", expected, ciphertext, err)
 }
@@ -84,7 +85,7 @@ func TestCryptoSecretBoxWithZeroLengthMessage(t *testing.T) {
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80}
 
-	ciphertext, err := CryptoSecretBox(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoSecretBox(message, nonce, key)
 
 	verify(t, "invalid ciphertext", expected, ciphertext, err)
 }
@@ -120,7 +121,7 @@ func TestCryptoSecretBoxWithInvalidNonce(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
-	ciphertext, err := CryptoSecretBox(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoSecretBox(message, nonce, key)
 
 	verifyErr(t, "invalid nonce", ciphertext, err)
 }
@@ -156,7 +157,7 @@ func TestCryptoSecretBoxWithInvalidKey(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83}
 
-	ciphertext, err := CryptoSecretBox(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoSecretBox(message, nonce, key)
 
 	verifyErr(t, "invalid key", ciphertext, err)
 }
@@ -193,7 +194,7 @@ func BenchmarkCryptoSecretBox(b *testing.B) {
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
 	for i := 0; i < b.N; i++ {
-		CryptoSecretBox(message, nonce, key)
+		tweetnacl.CryptoSecretBox(message, nonce, key)
 	}
 }
 
@@ -252,7 +253,7 @@ func TestCryptoSecretBoxOpen(t *testing.T) {
 		0xe0, 0x82, 0xf9, 0x37, 0x76, 0x38, 0x48, 0x64,
 		0x5e, 0x07, 0x05}
 
-	plaintext, err := CryptoSecretBoxOpen(ciphertext, nonce, key)
+	plaintext, err := tweetnacl.CryptoSecretBoxOpen(ciphertext, nonce, key)
 
 	verify(t, "invalid plaintext", expected, plaintext, err)
 }
@@ -271,7 +272,7 @@ func TestCryptoSecretBoxOpenWithZeroLengthCipherText(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
-	plaintext, err := CryptoSecretBoxOpen(ciphertext, nonce, key)
+	plaintext, err := tweetnacl.CryptoSecretBoxOpen(ciphertext, nonce, key)
 
 	verifyErr(t, "invalid plaintext", plaintext, err)
 }
@@ -309,7 +310,7 @@ func TestCryptoSecretBoxOpenWithInvalidNonce(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
-	plaintext, err := CryptoSecretBoxOpen(ciphertext, nonce, key)
+	plaintext, err := tweetnacl.CryptoSecretBoxOpen(ciphertext, nonce, key)
 
 	verifyErr(t, "invalid nonce", plaintext, err)
 }
@@ -347,7 +348,7 @@ func TestCryptoSecretBoxOpenWithInvalidKey(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83}
 
-	plaintext, err := CryptoSecretBoxOpen(ciphertext, nonce, key)
+	plaintext, err := tweetnacl.CryptoSecretBoxOpen(ciphertext, nonce, key)
 
 	verifyErr(t, "invalid key", plaintext, err)
 }
@@ -386,7 +387,7 @@ func BenchmarkCryptoSecretBoxOpen(b *testing.B) {
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
 	for i := 0; i < b.N; i++ {
-		CryptoSecretBoxOpen(ciphertext, nonce, key)
+		tweetnacl.CryptoSecretBoxOpen(ciphertext, nonce, key)
 	}
 }
 
@@ -396,21 +397,21 @@ func BenchmarkCryptoSecretBoxOpen(b *testing.B) {
 func TestCryptoSecretBoxLoop(t *testing.T) {
 	for mlen := 0; mlen < ROUNDS; mlen++ {
 		message := make([]byte, mlen)
-		nonce := make([]byte, SECRETBOX_NONCEBYTES)
-		key := make([]byte, SECRETBOX_KEYBYTES)
+		nonce := make([]byte, tweetnacl.SECRETBOX_NONCEBYTES)
+		key := make([]byte, tweetnacl.SECRETBOX_KEYBYTES)
 
 		rand.Read(message)
 		rand.Read(nonce)
 		rand.Read(key)
 
-		ciphertext, err := CryptoSecretBox(message, nonce, key)
+		ciphertext, err := tweetnacl.CryptoSecretBox(message, nonce, key)
 
 		if err != nil {
 			t.Errorf("LOOP TEST: encryption error (%v)", err)
 			return
 		}
 
-		plaintext, err := CryptoSecretBoxOpen(ciphertext, nonce, key)
+		plaintext, err := tweetnacl.CryptoSecretBoxOpen(ciphertext, nonce, key)
 
 		if err != nil {
 			t.Errorf("LOOP TEST: decryption error (%v)", err)
@@ -429,15 +430,15 @@ func TestCryptoSecretBoxLoop(t *testing.T) {
 func TestCryptoSecretBoxCorruptedCiphertext(t *testing.T) {
 	for mlen := 0; mlen < ROUNDS; mlen++ {
 		message := make([]byte, mlen)
-		nonce := make([]byte, SECRETBOX_NONCEBYTES)
-		key := make([]byte, SECRETBOX_KEYBYTES)
+		nonce := make([]byte, tweetnacl.SECRETBOX_NONCEBYTES)
+		key := make([]byte, tweetnacl.SECRETBOX_KEYBYTES)
 		caught := 0
 
 		rand.Read(message)
 		rand.Read(nonce)
 		rand.Read(key)
 
-		ciphertext, err := CryptoSecretBox(message, nonce, key)
+		ciphertext, err := tweetnacl.CryptoSecretBox(message, nonce, key)
 
 		if err != nil {
 			t.Errorf("CORRUPTED CIPHERTEXT: encryption error (%v)", err)
@@ -449,7 +450,7 @@ func TestCryptoSecretBoxCorruptedCiphertext(t *testing.T) {
 			b := byte(rand.Intn(256))
 
 			ciphertext[ix] = b
-			plaintext, err := CryptoSecretBoxOpen(ciphertext, nonce, key)
+			plaintext, err := tweetnacl.CryptoSecretBoxOpen(ciphertext, nonce, key)
 
 			if err == nil {
 				if !bytes.Equal(message, plaintext) {

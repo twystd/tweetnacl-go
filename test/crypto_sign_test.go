@@ -1,6 +1,7 @@
-package tweetnacl
+package test
 
 import (
+	".."
 	"bufio"
 	"bytes"
 	"encoding/hex"
@@ -13,19 +14,19 @@ import (
 
 // Adapted from tests/core1.c)
 func TestCryptoSignKeyPair(t *testing.T) {
-	keypair, err := CryptoSignKeyPair()
+	keypair, err := tweetnacl.CryptoSignKeyPair()
 
 	if err != nil {
 		t.Errorf("crypto_sign_keypair: %v", err)
 		return
 	}
 
-	if keypair.PublicKey == nil || len(keypair.PublicKey) != SIGN_PUBLICKEYBYTES {
+	if keypair.PublicKey == nil || len(keypair.PublicKey) != tweetnacl.SIGN_PUBLICKEYBYTES {
 		t.Errorf("crypto_sign_keypair: invalid public key")
 		return
 	}
 
-	if keypair.SecretKey == nil || len(keypair.SecretKey) != SIGN_SECRETKEYBYTES {
+	if keypair.SecretKey == nil || len(keypair.SecretKey) != tweetnacl.SIGN_SECRETKEYBYTES {
 		t.Errorf("crypto_sign_keypair: invalid secret key")
 		return
 	}
@@ -33,7 +34,7 @@ func TestCryptoSignKeyPair(t *testing.T) {
 
 func BenchmarkCryptoSignKeyPair(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		CryptoSignKeyPair()
+		tweetnacl.CryptoSignKeyPair()
 	}
 }
 
@@ -71,7 +72,7 @@ func TestCryptoSign(t *testing.T) {
 		0xc9, 0x48, 0x4e, 0x8a, 0x01, 0x8f, 0xa9, 0xe0,
 		0x73, 0x04, 0x2d, 0xf8, 0x8e, 0x3c, 0x56}
 
-	signed, err := CryptoSign(message, key)
+	signed, err := tweetnacl.CryptoSign(message, key)
 
 	verify(t, "invalid signed message", expected, signed, err)
 }
@@ -99,7 +100,7 @@ func TestCryptoSignWithZeroLengthMessage(t *testing.T) {
 		0xe2, 0x58, 0x4d, 0x0d, 0xd6, 0x51, 0x16, 0x3a,
 		0xd0, 0x50, 0xcb, 0x5b, 0x86, 0x07, 0x25, 0x02}
 
-	signed, err := CryptoSign(message, key)
+	signed, err := tweetnacl.CryptoSign(message, key)
 
 	verify(t, "invalid signed message", expected, signed, err)
 }
@@ -121,7 +122,7 @@ func TestCryptoSignWithInvalidKey(t *testing.T) {
 		0xed, 0x9e, 0x4e, 0xd9, 0x78, 0x05, 0x14, 0xae,
 		0xfb, 0x37, 0x9d, 0xab, 0xc8, 0x44, 0xf3}
 
-	signed, err := CryptoSign(message, key)
+	signed, err := tweetnacl.CryptoSign(message, key)
 
 	verifyErr(t, "invalid key", signed, err)
 }
@@ -144,7 +145,7 @@ func BenchmarkCryptoSign(b *testing.B) {
 		0xfb, 0x37, 0x9d, 0xab, 0xc8, 0x44, 0xf3, 0x1a}
 
 	for i := 0; i < b.N; i++ {
-		CryptoSign(message, key)
+		tweetnacl.CryptoSign(message, key)
 	}
 }
 
@@ -178,7 +179,7 @@ func TestCryptoSignOpen(t *testing.T) {
 		0xc9, 0x48, 0x4e, 0x8a, 0x01, 0x8f, 0xa9, 0xe0,
 		0x73, 0x04, 0x2d, 0xf8, 0x8e, 0x3c, 0x56}
 
-	message, err := CryptoSignOpen(signed, key)
+	message, err := tweetnacl.CryptoSignOpen(signed, key)
 
 	verify(t, "invalid unsigned message", expected, message, err)
 }
@@ -202,7 +203,7 @@ func TestCryptoSignOpenWithZeroLengthMessage(t *testing.T) {
 
 	expected := []byte{}
 
-	message, err := CryptoSignOpen(signed, key)
+	message, err := tweetnacl.CryptoSignOpen(signed, key)
 
 	verify(t, "invalid unsigned message", expected, message, err)
 }
@@ -216,7 +217,7 @@ func TestCryptoSignOpenWithZeroLengthSignedMessage(t *testing.T) {
 		0xed, 0x9e, 0x4e, 0xd9, 0x78, 0x05, 0x14, 0xae,
 		0xfb, 0x37, 0x9d, 0xab, 0xc8, 0x44, 0xf3, 0x1a}
 
-	message, err := CryptoSignOpen(signed, key)
+	message, err := tweetnacl.CryptoSignOpen(signed, key)
 
 	verifyErr(t, "invalid unsigned message", message, err)
 }
@@ -242,7 +243,7 @@ func TestCryptoSignOpenWithInvalidKey(t *testing.T) {
 		0xed, 0x9e, 0x4e, 0xd9, 0x78, 0x05, 0x14, 0xae,
 		0xfb, 0x37, 0x9d, 0xab, 0xc8, 0x44, 0xf3}
 
-	message, err := CryptoSignOpen(signed, key)
+	message, err := tweetnacl.CryptoSignOpen(signed, key)
 
 	verifyErr(t, "invalid unsigned message", message, err)
 }
@@ -273,7 +274,7 @@ func BenchmarkCryptoSignOpen(b *testing.B) {
 		0xfb, 0x37, 0x9d, 0xab, 0xc8, 0x44, 0xf3, 0x1a}
 
 	for i := 0; i < b.N; i++ {
-		CryptoSignOpen(signed, key)
+		tweetnacl.CryptoSignOpen(signed, key)
 	}
 }
 
@@ -296,7 +297,7 @@ func TestED25519(t *testing.T) {
 		m, _ := hex.DecodeString(tokens[2])
 		sm, _ := hex.DecodeString(tokens[3])
 
-		signed, err := CryptoSign(m, sk)
+		signed, err := tweetnacl.CryptoSign(m, sk)
 
 		if err != nil {
 			t.Errorf("Error signing message [%v]", err)
@@ -309,7 +310,7 @@ func TestED25519(t *testing.T) {
 			return
 		}
 
-		message, err := CryptoSignOpen(sm, pk)
+		message, err := tweetnacl.CryptoSignOpen(sm, pk)
 
 		if err != nil {
 			t.Errorf("Error opening signed message [%v]", err)
@@ -325,7 +326,7 @@ func TestED25519(t *testing.T) {
 		forgedm := forge(m)
 		forgedsm := forgesm(sm)
 
-		signed, err = CryptoSign(forgedm, sk)
+		signed, err = tweetnacl.CryptoSign(forgedm, sk)
 
 		if err != nil {
 			t.Errorf("Error signing forged message [%v]", err)
@@ -337,7 +338,7 @@ func TestED25519(t *testing.T) {
 			return
 		}
 
-		message, err = CryptoSignOpen(forgedsm, pk)
+		message, err = tweetnacl.CryptoSignOpen(forgedsm, pk)
 
 		if err == nil {
 			if bytes.Equal(message, m) {
@@ -370,14 +371,14 @@ func forge(m []byte) []byte {
 
 func forgesm(sm []byte) []byte {
 	N := 1
-	if len(sm) != SIGN_BYTES {
-		N = len(sm) - SIGN_BYTES
+	if len(sm) != tweetnacl.SIGN_BYTES {
+		N = len(sm) - tweetnacl.SIGN_BYTES
 	}
 
 	fm := make([]byte, N)
 	ix := len(fm) - 1
 
-	if len(sm) == SIGN_BYTES {
+	if len(sm) == tweetnacl.SIGN_BYTES {
 		copy(fm, []byte("x"))
 	} else {
 		copy(fm, sm)
@@ -385,10 +386,10 @@ func forgesm(sm []byte) []byte {
 		fm[ix] = byte((fm[ix] & 0x00ff) + 1)
 	}
 
-	fsm := make([]byte, SIGN_BYTES+len(fm))
+	fsm := make([]byte, tweetnacl.SIGN_BYTES+len(fm))
 
-	copy(fsm[0:SIGN_BYTES], sm)
-	copy(fsm[SIGN_BYTES:], fm)
+	copy(fsm[0:tweetnacl.SIGN_BYTES], sm)
+	copy(fsm[tweetnacl.SIGN_BYTES:], fm)
 
 	return fsm
 }

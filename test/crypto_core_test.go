@@ -1,6 +1,7 @@
-package tweetnacl
+package test
 
 import (
+	".."
 	"testing"
 )
 
@@ -28,7 +29,7 @@ func TestCryptoCoreHSalsa20(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
-	out, err := CryptoCoreHSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreHSalsa20(in, key, constant)
 
 	verify(t, "Invalid HSALSA-20 key", expected, out, err)
 }
@@ -56,7 +57,7 @@ func TestCryptoCoreHSalsa20X(t *testing.T) {
 		0x80, 0xf3, 0xce, 0xb4, 0x21, 0xbb, 0x61, 0xb9,
 		0x1c, 0xbd, 0x4c, 0x3e, 0x66, 0x25, 0x6c, 0xe4}
 
-	out, err := CryptoCoreHSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreHSalsa20(in, key, constant)
 
 	verify(t, "Invalid HSALSA-20 key", expected, out, err)
 }
@@ -83,7 +84,7 @@ func TestCryptoCoreHSalsa20Y(t *testing.T) {
 		0xea, 0x9b, 0x11, 0xe9, 0xa5, 0x19, 0x1f, 0x94,
 		0xe1, 0x8c, 0xba, 0x8f, 0xd8, 0x21, 0xa7, 0xcd}
 
-	out, err := CryptoCoreHSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreHSalsa20(in, key, constant)
 
 	verify(t, "Invalid HSALSA-20 key", expected, out, err)
 }
@@ -103,7 +104,7 @@ func TestCryptoCoreHSalsa20WithInvalidSharedSecret(t *testing.T) {
 		101, 120, 112, 97, 110, 100, 32, 51,
 		50, 45, 98, 121, 116, 101, 32, 107}
 
-	out, err := CryptoCoreHSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreHSalsa20(in, key, constant)
 
 	verifyErr(t, "invalid shared secret", out, err)
 }
@@ -123,7 +124,7 @@ func TestCryptoCoreHSalsa20WithInvalidSecretKey(t *testing.T) {
 		101, 120, 112, 97, 110, 100, 32, 51,
 		50, 45, 98, 121, 116, 101, 32, 107}
 
-	out, err := CryptoCoreHSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreHSalsa20(in, key, constant)
 
 	verifyErr(t, "invalid secret key", out, err)
 }
@@ -143,7 +144,7 @@ func TestCryptoCoreHSalsa20WithInvalidConstant(t *testing.T) {
 		101, 120, 112, 97, 110, 100, 32, 51,
 		50, 45, 98, 121, 116, 101, 32}
 
-	out, err := CryptoCoreHSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreHSalsa20(in, key, constant)
 
 	verifyErr(t, "invalid constant", out, err)
 }
@@ -170,7 +171,7 @@ func BenchmarkCryptoHSalsa20(b *testing.B) {
 		0x74, 0x65, 0x20, 0x6b}
 
 	for i := 0; i < b.N; i++ {
-		CryptoCoreHSalsa20(in, key, constant)
+		tweetnacl.CryptoCoreHSalsa20(in, key, constant)
 	}
 }
 
@@ -203,7 +204,7 @@ func TestCryptoCoreSalsa20(t *testing.T) {
 		177, 160, 133, 130, 6, 72, 149, 119,
 		192, 195, 132, 236, 234, 103, 246, 74}
 
-	out, err := CryptoCoreSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreSalsa20(in, key, constant)
 
 	verify(t, "Invalid SALSA-20 key", expected, out, err)
 }
@@ -232,7 +233,7 @@ func TestCryptoCoreSalsa20X(t *testing.T) {
 		0xea, 0x9b, 0x11, 0xe9, 0xa5, 0x19, 0x1f, 0x94,
 		0xe1, 0x8c, 0xba, 0x8f, 0xd8, 0x21, 0xa7, 0xcd}
 
-	out, _ := CryptoCoreSalsa20(in, key, constant)
+	out, _ := tweetnacl.CryptoCoreSalsa20(in, key, constant)
 	buffer := make([]byte, len(expected))
 	var ix int = 0
 	var borrow byte = 0
@@ -291,7 +292,7 @@ func TestCryptoCoreSalsa20WithInvalidSharedSecret(t *testing.T) {
 		101, 120, 112, 97, 110, 100, 32, 51,
 		50, 45, 98, 121, 116, 101, 32, 107}
 
-	out, err := CryptoCoreSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreSalsa20(in, key, constant)
 
 	verifyErr(t, "invalid shared secret", out, err)
 }
@@ -312,7 +313,7 @@ func TestCryptoCoreSalsa20WithInvalidSecretKey(t *testing.T) {
 		101, 120, 112, 97, 110, 100, 32, 51,
 		50, 45, 98, 121, 116, 101, 32, 107}
 
-	out, err := CryptoCoreSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreSalsa20(in, key, constant)
 
 	verifyErr(t, "invalid secret key", out, err)
 }
@@ -333,7 +334,7 @@ func TestCryptoCoreSalsa20WithInvalidConstant(t *testing.T) {
 		101, 120, 112, 97, 110, 100, 32, 51,
 		50, 45, 98, 121, 116, 101, 32}
 
-	out, err := CryptoCoreSalsa20(in, key, constant)
+	out, err := tweetnacl.CryptoCoreSalsa20(in, key, constant)
 
 	verifyErr(t, "invalid constant", out, err)
 }
@@ -363,6 +364,6 @@ func BenchmarkCryptoSalsa20(b *testing.B) {
 		116, 101, 32, 107}
 
 	for i := 0; i < b.N; i++ {
-		CryptoCoreSalsa20(in, key, constant)
+		tweetnacl.CryptoCoreSalsa20(in, key, constant)
 	}
 }

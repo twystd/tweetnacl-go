@@ -1,6 +1,7 @@
-package tweetnacl
+package test
 
 import (
+	".."
 	"crypto/sha256"
 	"testing"
 )
@@ -26,7 +27,7 @@ func TestCryptoStream(t *testing.T) {
 		0x25, 0x39, 0x12, 0x1d, 0x8e, 0x23, 0x4e, 0x65,
 		0x2d, 0x65, 0x1f, 0xa4, 0xc8, 0xcf, 0xf8, 0x80}
 
-	stream, err := CryptoStream(32, nonce, key)
+	stream, err := tweetnacl.CryptoStream(32, nonce, key)
 
 	verify(t, "invalid cipher stream", expected, stream, err)
 }
@@ -45,7 +46,7 @@ func TestCryptoStreamWithZeroLength(t *testing.T) {
 
 	expected := []byte{}
 
-	stream, err := CryptoStream(0, nonce, key)
+	stream, err := tweetnacl.CryptoStream(0, nonce, key)
 
 	verify(t, "invalid cipher stream", expected, stream, err)
 }
@@ -62,7 +63,7 @@ func TestCryptoStreamWithInvalidNonce(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
-	stream, err := CryptoStream(32, nonce, key)
+	stream, err := tweetnacl.CryptoStream(32, nonce, key)
 
 	verifyErr(t, "invalid nonce", stream, err)
 }
@@ -79,7 +80,7 @@ func TestCryptoStreamWithInvalidKey(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83}
 
-	stream, err := CryptoStream(32, nonce, key)
+	stream, err := tweetnacl.CryptoStream(32, nonce, key)
 
 	verifyErr(t, "invalid key", stream, err)
 }
@@ -97,7 +98,7 @@ func BenchmarkCryptoStream(b *testing.B) {
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
 	for i := 0; i < b.N; i++ {
-		CryptoStream(32, nonce, key)
+		tweetnacl.CryptoStream(32, nonce, key)
 	}
 }
 
@@ -162,7 +163,7 @@ func TestCryptoStreamXor(t *testing.T) {
 		0x59, 0x9b, 0x1f, 0x65, 0x4c, 0xb4, 0x5a, 0x74,
 		0xe3, 0x55, 0xa5}
 
-	ciphertext, err := CryptoStreamXor(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoStreamXor(message, nonce, key)
 
 	verify(t, "invalid ciphertext", expected, ciphertext, err)
 }
@@ -183,7 +184,7 @@ func TestCryptoStreamXorWithZeroLengthMessage(t *testing.T) {
 
 	expected := []byte{}
 
-	ciphertext, err := CryptoStreamXor(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoStreamXor(message, nonce, key)
 
 	verify(t, "invalid ciphertext", expected, ciphertext, err)
 }
@@ -223,7 +224,7 @@ func TestCryptoStreamXorWithInvalidNonce(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
-	ciphertext, err := CryptoStreamXor(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoStreamXor(message, nonce, key)
 
 	verifyErr(t, "invalid nonce", ciphertext, err)
 }
@@ -263,7 +264,7 @@ func TestCryptoStreamXorWithInvalidKey(t *testing.T) {
 		0x60, 0x09, 0x54, 0x9e, 0xac, 0x64, 0x74, 0xf2,
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83}
 
-	ciphertext, err := CryptoStreamXor(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoStreamXor(message, nonce, key)
 
 	verifyErr(t, "invalid key", ciphertext, err)
 }
@@ -304,7 +305,7 @@ func BenchmarkCryptoStreamXor(b *testing.B) {
 		0x06, 0xc4, 0xee, 0x08, 0x44, 0xf6, 0x83, 0x89}
 
 	for i := 0; i < b.N; i++ {
-		CryptoStreamXor(message, nonce, key)
+		tweetnacl.CryptoStreamXor(message, nonce, key)
 	}
 }
 
@@ -327,7 +328,7 @@ func TestCryptoStreamSalsa20(t *testing.T) {
 		0x80, 0xf3, 0xce, 0xb4, 0x21, 0xbb, 0x61, 0xb9,
 		0x1c, 0xbd, 0x4c, 0x3e, 0x66, 0x25, 0x6c, 0xe4}
 
-	stream, err := CryptoStreamSalsa20(4194304, nonce, key)
+	stream, err := tweetnacl.CryptoStreamSalsa20(4194304, nonce, key)
 	hash := sha256.Sum256(stream)
 
 	verify(t, "invalid SALSA-20 cipher stream", HASH, hash[:], err)
@@ -345,7 +346,7 @@ func TestCryptoStreamSalsa20WithZeroLength(t *testing.T) {
 
 	expected := []byte{}
 
-	stream, err := CryptoStreamSalsa20(0, nonce, key)
+	stream, err := tweetnacl.CryptoStreamSalsa20(0, nonce, key)
 
 	verify(t, "invalid SALSA-20 cipher stream", expected, stream, err)
 }
@@ -360,7 +361,7 @@ func TestCryptoStreamSalsa20WithInvalidNonce(t *testing.T) {
 		0x80, 0xf3, 0xce, 0xb4, 0x21, 0xbb, 0x61, 0xb9,
 		0x1c, 0xbd, 0x4c, 0x3e, 0x66, 0x25, 0x6c, 0xe4}
 
-	stream, err := CryptoStreamSalsa20(4194304, nonce, key)
+	stream, err := tweetnacl.CryptoStreamSalsa20(4194304, nonce, key)
 
 	verifyErr(t, "invalid nonce", stream, err)
 }
@@ -375,7 +376,7 @@ func TestCryptoStreamSalsa20WithInvalidKey(t *testing.T) {
 		0x80, 0xf3, 0xce, 0xb4, 0x21, 0xbb, 0x61, 0xb9,
 		0x1c, 0xbd, 0x4c, 0x3e, 0x66, 0x25, 0x6c}
 
-	stream, err := CryptoStreamSalsa20(4194304, nonce, key)
+	stream, err := tweetnacl.CryptoStreamSalsa20(4194304, nonce, key)
 
 	verifyErr(t, "invalid key", stream, err)
 }
@@ -391,7 +392,7 @@ func BenchmarkCryptoStreamSalsa20(b *testing.B) {
 		0x1c, 0xbd, 0x4c, 0x3e, 0x66, 0x25, 0x6c, 0xe4}
 
 	for i := 0; i < b.N; i++ {
-		CryptoStreamSalsa20(4194304, nonce, key)
+		tweetnacl.CryptoStreamSalsa20(4194304, nonce, key)
 	}
 }
 
@@ -455,7 +456,7 @@ func TestCryptoStreamSalsa20Xor(t *testing.T) {
 		0x59, 0x9b, 0x1f, 0x65, 0x4c, 0xb4, 0x5a, 0x74,
 		0xe3, 0x55, 0xa5}
 
-	ciphertext, err := CryptoStreamSalsa20Xor(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoStreamSalsa20Xor(message, nonce, key)
 
 	verify(t, "invalid ciphertext", expected, ciphertext, err)
 }
@@ -474,7 +475,7 @@ func TestCryptoStreamSalsa20XorWithZeroLengthMessage(t *testing.T) {
 
 	expected := []byte{}
 
-	ciphertext, err := CryptoStreamSalsa20Xor(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoStreamSalsa20Xor(message, nonce, key)
 
 	verify(t, "invalid ciphertext", expected, ciphertext, err)
 }
@@ -512,7 +513,7 @@ func TestCryptoStreamSalsa20XorWithInvalidNonce(t *testing.T) {
 		0x80, 0xf3, 0xce, 0xb4, 0x21, 0xbb, 0x61, 0xb9,
 		0x1c, 0xbd, 0x4c, 0x3e, 0x66, 0x25, 0x6c, 0xe4}
 
-	ciphertext, err := CryptoStreamSalsa20Xor(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoStreamSalsa20Xor(message, nonce, key)
 
 	verifyErr(t, "invalid nonce", ciphertext, err)
 }
@@ -550,7 +551,7 @@ func TestCryptoStreamSalsa20XorWithInvalidKey(t *testing.T) {
 		0x80, 0xf3, 0xce, 0xb4, 0x21, 0xbb, 0x61, 0xb9,
 		0x1c, 0xbd, 0x4c, 0x3e, 0x66, 0x25, 0x6c}
 
-	ciphertext, err := CryptoStreamSalsa20Xor(message, nonce, key)
+	ciphertext, err := tweetnacl.CryptoStreamSalsa20Xor(message, nonce, key)
 
 	verifyErr(t, "invalid key", ciphertext, err)
 }
@@ -589,6 +590,6 @@ func BenchmarkCryptoStreamSalsa20Xor(b *testing.B) {
 		0x1c, 0xbd, 0x4c, 0x3e, 0x66, 0x25, 0x6c, 0xe4}
 
 	for i := 0; i < b.N; i++ {
-		CryptoStreamSalsa20Xor(message, nonce, key)
+		tweetnacl.CryptoStreamSalsa20Xor(message, nonce, key)
 	}
 }
