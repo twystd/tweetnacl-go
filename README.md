@@ -2,7 +2,7 @@ tweetnacl-golang: version 0.00.0
 
 # TweetNaCl - GO port
 
-*tweetnacl-golang* is a port of Dan Bernstein's [TweetNaCl][tweetnacl] "crypto library in a 100 tweets" code
+*tweetnacl-go* is a port of Dan Bernstein's [TweetNaCl][tweetnacl] "crypto library in a 100 tweets" code
 to the Go language. It is implemented as a wrapper around the original code to preserve the design and timing
 characteristics of the original implementation.
 
@@ -10,7 +10,7 @@ Version Info
 ------------
 tweetnacl: 20140427
 
-tweetnacl-golang: 0.00.0
+tweetnacl-go: 0.9.0
 
 Usage
 -----
@@ -40,7 +40,7 @@ Notes
 
 TODO
 ----
-1. Repackage as wrapper
+1. Standalone example
 2. Fork go-tweetnacl and merge code
 
 References
