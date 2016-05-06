@@ -10,15 +10,7 @@ Version Info
 ------------
 tweetnacl: 20140427
 
-tweetnacl-go: 0.9.0
-
-Usage
------
-
-
-Building
---------
-
+tweetnacl-go: 1.00.0
 
 Disclaimer
 ----------
@@ -40,8 +32,7 @@ Notes
 
 TODO
 ----
-1. Standalone example
-2. Fork go-tweetnacl and merge code
+1. Fork go-tweetnacl and merge code
 
 References
 ----------
