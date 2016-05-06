@@ -1,4 +1,4 @@
-tweetnacl-golang: version 0.00.0 
+tweetnacl-go: version 1.00.0 
 
 # TweetNaCl - GO port
 
