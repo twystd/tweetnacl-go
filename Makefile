@@ -3,20 +3,25 @@ all: test      \
      coverage
 
 format: 
-	gofmt -w=true *.go
-	gofmt -w=true *.go
+	go fmt ./...
 
 build: format
-	go build
+	go build ./...
 
 test: build
-	go test
+	go test ./...
+
+vet: build
+	go vet ./...
+
+lint: build
+	golint ./...
 
 benchmark: build
-	go test -bench .
+	go test -bench ./...
 
 coverage: build
-	go test -cover .
+	go test -cover ./...
 
 debug: build
 	gofmt -w=true *.go

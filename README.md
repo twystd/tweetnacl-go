@@ -1,4 +1,4 @@
-tweetnacl-go: version 1.00.0 
+tweetnacl-go: version 1.01.0 
 
 # TweetNaCl - GO port
 
@@ -10,7 +10,8 @@ Version Info
 ------------
 tweetnacl: 20140427
 
-tweetnacl-go: 1.00.0
+- v1.00.0:  Initial release for `tweetnacl-go`
+- v1.01.0:  Updated to support Go modules
 
 Disclaimer
 ----------

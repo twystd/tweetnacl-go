@@ -44,7 +44,7 @@ func verifyOk(t *testing.T, description string, expected, result bool, err error
 	}
 
 	if !result {
-		t.Errorf("\n%s - expected %x\n%s - got:     %x", description, true, padding, result)
+		t.Errorf("\n%s - expected %v\n%s - got:     %v", description, true, padding, result)
 		return
 	}
 }

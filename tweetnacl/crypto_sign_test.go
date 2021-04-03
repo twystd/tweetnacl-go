@@ -3,11 +3,14 @@ package tweetnacl
 import (
 	"bufio"
 	"bytes"
+	"embed"
 	"encoding/hex"
-	"os"
 	"strings"
 	"testing"
 )
+
+//go:embed sign_test.input
+var fs embed.FS
 
 // --- CryptoSignKeyPair ---
 
@@ -279,7 +282,7 @@ func BenchmarkCryptoSignOpen(b *testing.B) {
 
 // Adapted from http://ed25519.cr.yp.to/python/sign.py.
 func TestED25519(t *testing.T) {
-	file, _ := os.Open("sign.input")
+	file, _ := fs.Open("sign_test.input")
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
