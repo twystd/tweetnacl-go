@@ -51,6 +51,10 @@ References
 11. [go-tweetnacl][go-tweetnacl]
 12. [On the Impending Crypto Monoculture][gutmann]
 13. [Passing zero length Go byte array to a C function][golang-nuts]
+14. [NaCl](http://wiki.ucis.nl/NaCl/Windows)
+15. [libsodium:randombytes_random](https://doc.libsodium.org/generating_random_data)
+16. [Microsoft Windows:rand_s](https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/rand-s)
+17. [Stackoverflow:Equivalent of /dev/urandom on Windows?](https://stackoverflow.com/questions/22049203/equivalent-of-dev-urandom-on-windows)
 
 [tweetnacl]:     http://tweetnacl.cr.yp.to
 [tweetnacl-pdf]: http://tweetnacl.cr.yp.to/tweetnacl-20131229.pdf
