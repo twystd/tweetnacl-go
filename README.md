@@ -11,7 +11,7 @@ Version Info
 tweetnacl: 20140427
 
 - v1.00.0:  Initial release for `tweetnacl-go`
-- v1.01.0:  (in development) Updated to support Go modules
+- v1.01.0:  Updated with support Go modules and Microsoft Windows CryptoApi
 
 Disclaimer
 ----------
